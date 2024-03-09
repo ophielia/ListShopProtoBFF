@@ -10,21 +10,12 @@ import allshared
 
 @main
 struct iosApp: App {
-    private let handle: SDKHandle
-    
-    init() {
-        self.handle = StartSDKKt.startSDK(analytics: IosAnalytics())
-        handle.appAnalytics.appStarted()
-        print(StartSDKKt.sayHello())
-        
-    }
+    let sdk = StartSDKKt.startSDK(analytics: IosAnalytics())
+
     
     var body: some Scene {
         WindowGroup {
-            BreedListScreen(
-                viewModel: BreedViewModel(repository: handle.breedRepository, breedAnalytics: handle.breedAnalytics),
-                breedAnalytics: handle.breedAnalytics
-            )
+            ContentView(viewModel: .init(sdk: sdk))
         }
     }
 }

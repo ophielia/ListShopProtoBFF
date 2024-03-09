@@ -1,20 +1,23 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    kotlin("multiplatform")
+    id("com.android.library")
     `maven-publish`
 }
 
 kotlin {
+    @Suppress("OPT_IN_USAGE")
+    targetHierarchy.default()
     androidTarget {
         publishAllLibraryVariants()
     }
-    iosX64()
-    iosArm64()
+    ios()
     iosSimulatorArm64()
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.touchlab.stately.concurrency)
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.touchlab.stately.concurrency)
+            }
         }
     }
 }
@@ -28,6 +31,7 @@ android {
     }
 
     defaultConfig {
+        @Suppress("UnstableApiUsage")
         minSdk = libs.versions.minSdk.get().toInt()
     }
     namespace = "co.touchlab.kmmbridgekickstart.analytics"
