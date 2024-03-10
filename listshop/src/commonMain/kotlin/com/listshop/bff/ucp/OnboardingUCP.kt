@@ -1,6 +1,8 @@
 package com.listshop.bff.ucp
 
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.bff.data.bff.BFFResult
+import com.listshop.bff.data.model.ShoppingList
 import com.listshop.bff.repositories.ListShopRepository
 import com.listshop.bff.data.model.Tag
 import com.listshop.bff.remote.ListShopApi
@@ -25,8 +27,8 @@ class OnboardingUCP internal constructor(
         }
     }
  */
-    @Throws(Exception::class) suspend fun systemGetLaunchScreen(): List<Tag> {
-        return  emptyList();
+    @Throws(Exception::class) suspend fun systemGetLaunchScreen(): BFFResult<ShoppingList> {
+        return  BFFResult(ShoppingList.create("1","name"),null);
     }
 
 }
