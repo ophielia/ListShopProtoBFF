@@ -20,7 +20,7 @@ internal class SessionInfoRepository(
     fun createUserInfo(): UserInfoEntity? {
         val now = Clock.System.now()
 
-        val userInfo = listShopDatabase.db.userSessionDefinitionQueries
+        listShopDatabase.db.userSessionDefinitionQueries
             .insertIntoUserInfo(null,
                 null,
                 now.toString(),

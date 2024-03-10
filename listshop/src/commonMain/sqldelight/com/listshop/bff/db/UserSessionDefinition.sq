@@ -1,5 +1,3 @@
-import kotlin.Boolean;
-
 CREATE TABLE UserInfoEntity (
     userName TEXT,
     userToken TEXT,

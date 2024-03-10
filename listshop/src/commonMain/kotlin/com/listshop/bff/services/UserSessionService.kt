@@ -10,10 +10,10 @@ class UserSessionService internal constructor(
 
     fun currentSession(): UserSession {
         if (_userSession != null) {
-            return _userSession!!;
+            return _userSession!!
         }
         initializeUserSession()
-        return _userSession!!;
+        return _userSession!!
 
 
     }
@@ -21,7 +21,7 @@ class UserSessionService internal constructor(
     private fun getOrCreateUserInfo(): UserInfoEntity {
         var userInfo = sessionRepo.getUserInfo()
         if (userInfo != null) {
-            return userInfo!!
+            return userInfo
         }
         userInfo = sessionRepo.createUserInfo()
         return userInfo!!
