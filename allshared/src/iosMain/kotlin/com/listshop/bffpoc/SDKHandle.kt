@@ -6,8 +6,8 @@ import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 
 data class SDKHandle(
-    val onboardingUCP: OnboardingUCP,
     val tagUCP: TagUCP,
+    val onboardingUCP: OnboardingUCP,
     val appAnalytics: AppAnalytics,
     val breedAnalytics: BreedAnalytics
 )

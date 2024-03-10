@@ -69,7 +69,7 @@ android {
 addGithubPackagesRepository()
 
 sqldelight {
-    databases.create("ListshopPOCDb") {
-        packageName.set("com.listshop.bffpoc.db")
+    databases.create("ListshopDb") {
+        packageName.set("com.listshop.bff.db")
     }
 }
