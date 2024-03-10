@@ -1,30 +1,27 @@
 package com.listshop.bff.repositories
 
-import app.cash.sqldelight.db.SqlDriver
 import com.listshop.bff.data.model.Tag
-import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.db.TagLookupEntity
 
-internal class ListShopRepository(
-    sqlDriver: SqlDriver,
-    private val listhopAnalytics: ListShopAnalytics,
+internal class TagRepository(
+    private val listShopDatabase: ListShopDatabase
 ) {
-    private val dbRef: ListshopDb = ListshopDb(sqlDriver)
+    private val dbRef: ListshopDb = listShopDatabase.db
 
     fun selectAllTags(): List<Tag> {
-        listhopAnalytics.fetchingTagsFromNetwork()
-        val result: List<TagLookupEntity> = dbRef.listShopQueries
+        listShopDatabase.analytics.fetchingTagsFromNetwork()
+        val result: List<TagLookupEntity> = dbRef.tagDefinitionQueries
             .selectAllTagLookups(::mapTagLookupSelecting).executeAsList()
         return result.map { tle -> Tag.create(tle) }
     }
 
 
     suspend fun insertTags(tags: List<Tag>) {
-        listhopAnalytics.insertingTagsToDatabase(tags.size)
-        dbRef.listShopQueries.transaction {
+        listShopDatabase.analytics.insertingTagsToDatabase(tags.size)
+        dbRef.tagDefinitionQueries.transaction {
             tags.forEach { tag ->
-                dbRef.listShopQueries.insertIntoTagLookup(
+                dbRef.tagDefinitionQueries.insertIntoTagLookup(
                     tag.externalId,
                     false, tag.name, tag.parentId, "0", tag.tagType, "0"
                 )
@@ -34,9 +31,9 @@ internal class ListShopRepository(
 
 
     suspend fun deleteAll() {
-        listhopAnalytics.databaseCleared()
-        dbRef.listShopQueries.transaction {
-            dbRef.listShopQueries.removeAllTagLookups()
+        listShopDatabase.analytics.databaseCleared()
+        dbRef.tagDefinitionQueries.transaction {
+            dbRef.tagDefinitionQueries.removeAllTagLookups()
         }
     }
 

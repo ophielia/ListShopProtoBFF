@@ -7,7 +7,8 @@ import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.remote.ListShopApi
 import com.listshop.bff.remote.ListShopApiImpl
-import com.listshop.bff.repositories.ListShopRepository
+import com.listshop.bff.repositories.ListShopDatabase
+import com.listshop.bff.repositories.TagRepository
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.Settings
@@ -22,7 +23,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     override val tagUCP: TagUCP by lazy {
         TagUCP(
-            dbHelper = listShopRepository,
+            dataRepo = tagRepository,
             listshopApi = listShopApi,
             listShopAnalytics = listShopAnalytics
         )
@@ -30,20 +31,11 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     override val onboardingUCP: OnboardingUCP by lazy {
         OnboardingUCP(
-            dbHelper = listShopRepository,
+            dbHelper = tagRepository,
             listshopApi = listShopApi,
             listShopAnalytics = listShopAnalytics
         )
     }
-
-
-    /*
-    class TagUCP internal constructor(
-    private val dbHelper: ListShopRepository,
-    private val listshopApi: ListShopApi,
-    private val listShopAnalytics: ListShopAnalytics
-)
-     */
 
     override val appAnalytics: AppAnalytics
         get() = analyticsHandle.appAnalytics
@@ -56,13 +48,19 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         get() = analyticsHandle.httpClientAnalytics
 
 
-    private val listShopRepository: ListShopRepository by lazy {
-        ListShopRepository(
-            sqlDriver = sqlDriver,
-            listhopAnalytics = listShopAnalytics
+    private val tagRepository: TagRepository by lazy {
+        TagRepository(
+            listShopDatabase = listShopDatabase
         )
     }
 
+
+    private val listShopDatabase: ListShopDatabase by lazy {
+        ListShopDatabase(
+            sqlDriver = sqlDriver,
+            analytics = listShopAnalytics
+        )
+    }
 
     private val listShopApi: ListShopApi by lazy {
         ListShopApiImpl(

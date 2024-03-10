@@ -3,12 +3,12 @@ package com.listshop.bff.ucp
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.data.bff.BFFResult
 import com.listshop.bff.data.model.ShoppingList
-import com.listshop.bff.repositories.ListShopRepository
-import com.listshop.bff.data.model.Tag
+import com.listshop.bff.repositories.ListShopDatabase
 import com.listshop.bff.remote.ListShopApi
+import com.listshop.bff.repositories.TagRepository
 
 class OnboardingUCP internal constructor(
-    private val dbHelper: ListShopRepository,
+    private val dbHelper: TagRepository,
     private val listshopApi: ListShopApi,
     private val listShopAnalytics: ListShopAnalytics
 ) {
