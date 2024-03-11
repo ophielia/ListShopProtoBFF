@@ -4,6 +4,7 @@ import android.content.Context
 import co.touchlab.kmmbridgekickstart.Analytics
 import co.touchlab.kmmbridgekickstart.initAnalytics
 
+//MM nfl add build info here
 fun startSDK(analytics: Analytics, context: Context): SDKHandle {
     val analyticsHandle = initAnalytics(analytics)
     val tagUCP = tagUCPStartup(context, analyticsHandle)

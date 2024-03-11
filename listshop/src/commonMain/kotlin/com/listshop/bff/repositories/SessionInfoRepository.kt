@@ -1,5 +1,6 @@
 package com.listshop.bff.repositories
 
+import com.listshop.bff.data.model.UserInfo
 import com.listshop.bff.db.UserInfoEntity
 import kotlinx.datetime.Clock
 
@@ -28,6 +29,17 @@ internal class SessionInfoRepository(
                 null
             )
         return getUserInfo()
+    }
+
+    fun updateUserInfo(userInfo: UserInfo) {
+        listShopDatabase.db.userSessionDefinitionQueries
+            .updateUserInfo(
+                userInfo.userName,
+                userInfo.userToken,
+                userInfo.userCreated,
+                userInfo.userLastSeen,
+                userInfo.userLastSignedIn
+            )
     }
 
 }

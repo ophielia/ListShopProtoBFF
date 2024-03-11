@@ -1,7 +1,11 @@
 package com.listshop.bff.services
 
+import com.listshop.bff.data.model.UserInfo
+import com.listshop.bff.data.state.ConnectionState
+import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.db.UserInfoEntity
 import com.listshop.bff.repositories.SessionInfoRepository
+import kotlinx.datetime.Clock
 
 class UserSessionService internal constructor(
     private val sessionRepo: SessionInfoRepository
@@ -14,17 +18,67 @@ class UserSessionService internal constructor(
         }
         initializeUserSession()
         return _userSession!!
-
-
     }
 
-    private fun getOrCreateUserInfo(): UserInfoEntity {
+     fun setUserToken(token: String) {
+         var userInfo = getUserInfo()
+         userInfo.userToken = token
+         updateUserInfo(userInfo)
+         refreshUserSession()
+    }
+
+    fun setUserName(name: String) {
+        var userInfo = getUserInfo()
+        userInfo.userName = name
+        updateUserInfo(userInfo)
+        refreshUserSession()
+    }
+
+    fun setUserLastSeenToNow() {
+        var userInfo = getUserInfo()
+        val now = Clock.System.now()
+        userInfo.userLastSeen = now.toString()
+        updateUserInfo(userInfo)
+        refreshUserSession()
+    }
+
+    fun setuserLastSignedInToNow() {
+        var userInfo = getUserInfo()
+        val now = Clock.System.now()
+        userInfo.userLastSignedIn = now.toString()
+        updateUserInfo(userInfo)
+        refreshUserSession()
+    }
+    private fun updateUserInfo(userInfo: UserInfo) {
+        sessionRepo.updateUserInfo(userInfo)
+    }
+
+    private fun getUserInfo(): UserInfo {
+        val userInfoEntity = getOrCreateUserInfoEntity()
+        return UserInfo.create(userInfoEntity)
+    }
+
+
+    private fun getOrCreateUserInfoEntity(): UserInfoEntity {
         var userInfo = sessionRepo.getUserInfo()
         if (userInfo != null) {
             return userInfo
         }
         userInfo = sessionRepo.createUserInfo()
         return userInfo!!
+    }
+
+    private fun refreshUserSession() {
+        var userInfo = getOrCreateUserInfoEntity()
+        //MM nfl - list info here
+        val sessionState = determineUserSessionState(userInfo)
+        val connectionState = _userSession?.connectionState ?: ConnectionState.Unknown
+        _userSession = UserSession(userInfo.userName,
+                userInfo.userToken,
+                sessionState,
+            connectionState
+            )
+
     }
 
     private fun determineUserSessionState(userInfo: UserInfoEntity): UserSessionState {
@@ -39,11 +93,12 @@ class UserSessionService internal constructor(
     }
 
     private fun initializeUserSession() {
-        val userInfo = getOrCreateUserInfo()
+        val userInfo = getOrCreateUserInfoEntity()
         val sessionState = determineUserSessionState( userInfo)
         _userSession = UserSession(userInfo.userName,
             userInfo.userToken,
-            sessionState)
+            sessionState,
+            ConnectionState.Unknown)
     }
 
 
@@ -59,6 +114,12 @@ class UserSessionService internal constructor(
     userInfo?.userCreated = Date().iso8601
     coreDataApi.updateUserInfo()
     refreshUserSession()
+    }
+
+    public enum ConnectionState {
+    case online
+    case offline
+    case unknown
     }
 
      *

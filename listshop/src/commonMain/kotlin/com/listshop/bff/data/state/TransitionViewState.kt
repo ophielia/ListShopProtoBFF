@@ -1,4 +1,4 @@
-package com.listshop.bff.data.bff
+package com.listshop.bff.data.state
 
 import com.listshop.bff.data.model.ShoppingList
 

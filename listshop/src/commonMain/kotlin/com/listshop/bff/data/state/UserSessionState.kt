@@ -1,4 +1,4 @@
-package com.listshop.bff.services
+package com.listshop.bff.data.state
 
 enum class UserSessionState {
     User,
