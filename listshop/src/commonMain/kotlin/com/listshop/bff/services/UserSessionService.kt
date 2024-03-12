@@ -1,5 +1,6 @@
 package com.listshop.bff.services
 
+import co.touchlab.kmmbridgekickstart.AppInfo
 import com.listshop.bff.data.model.UserInfo
 import com.listshop.bff.data.state.ConnectionState
 import com.listshop.bff.data.state.UserSessionState
@@ -8,7 +9,8 @@ import com.listshop.bff.repositories.SessionInfoRepository
 import kotlinx.datetime.Clock
 
 class UserSessionService internal constructor(
-    private val sessionRepo: SessionInfoRepository
+    private val sessionRepo: SessionInfoRepository,
+    private val appInfo: AppInfo
 ) {
     private var _userSession: UserSession? = null
 
@@ -76,7 +78,10 @@ class UserSessionService internal constructor(
         _userSession = UserSession(userInfo.userName,
                 userInfo.userToken,
                 sessionState,
-            connectionState
+            connectionState,
+            appInfo.version,
+            appInfo.build,
+            appInfo.baseUrl
             )
 
     }
@@ -98,50 +103,13 @@ class UserSessionService internal constructor(
         _userSession = UserSession(userInfo.userName,
             userInfo.userToken,
             sessionState,
-            ConnectionState.Unknown)
+            ConnectionState.Unknown,
+            appInfo.version,
+            appInfo.build,
+            appInfo.baseUrl)
     }
 
 
-    /**
-     *
-
-    public func updateUserInfo() {
-    saveContext()
-    }
-
-    public func setUserCreated() {
-    userInfo = getOrCreateUserInfo()
-    userInfo?.userCreated = Date().iso8601
-    coreDataApi.updateUserInfo()
-    refreshUserSession()
-    }
-
-    public enum ConnectionState {
-    case online
-    case offline
-    case unknown
-    }
-
-     *
-    private func refreshUserSession() {
-    userInfo = getOrCreateUserInfo()
-    listInfo = getOrCreateListInfo()
-    let sessionState = determineUserSessionState(for: userInfo!, with: listInfo!)
-    let connectionState = privateUserSession?.connectionState ?? ConnectionState.online
-    let teaserCounts = privateUserSession?.teaserCounts ?? [:]
-    let sessionListMemory = getOrCreateSessionListMemory()
-    let sessionDishMemory = getOrCreateSessionDishMemory()
-    privateUserSession = UserSession(userInfo: userInfo!,
-    listInfo: listInfo!,
-    sessionStateList: sessionListMemory,
-    sessionStateDish: sessionDishMemory,
-    sessionState: sessionState,
-    connectionState: connectionState,
-    teaserCounts: teaserCounts,
-    version: versionNumber,
-    buildNumber: buildNumber)
-    }
-     */
 
 
 }

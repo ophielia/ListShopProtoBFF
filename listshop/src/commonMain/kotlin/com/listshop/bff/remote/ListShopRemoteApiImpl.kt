@@ -29,7 +29,7 @@ internal class ListShopRemoteApiImpl(
 
     private var _currentClientToken: String? = null
 
-    private var _client = HttpClient(engine) {
+    private var  _client = HttpClient(engine) {
         expectSuccess = true
         install(ContentNegotiation) {
             json(Json {
@@ -52,22 +52,32 @@ internal class ListShopRemoteApiImpl(
             requestTimeoutMillis = timeout
             socketTimeoutMillis = timeout
         }
+        //Default Request Setting
+        defaultRequest {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            url {
+                protocol = URLProtocol.HTTPS
+            }
+        }
     }
 
     override fun client(token: String?): HttpClient {
         if (token == _currentClientToken) {
             return _client
         }
+        _currentClientToken = token
         // token has changed, we need to re-construct the client
+        val baseUrl = sessionService.currentSession().baseUrl
         if (token == null) {
-            createClientWithoutToken()
+            createClientWithoutToken(baseUrl)
         } else {
-            createClientWithToken(token)
+            createClientWithToken(token, baseUrl)
         }
         return _client
     }
 
-    private fun createClientWithToken(token: String) {
+    private fun createClientWithToken(token: String, baseUrl: String) {
         _client = HttpClient(engine) {
             expectSuccess = true
             install(ContentNegotiation) {
@@ -101,13 +111,13 @@ internal class ListShopRemoteApiImpl(
                 }
                 url {
                     protocol = URLProtocol.HTTPS
-                    //host = Constants.BASE_URL
+                    host = baseUrl
                 }
             }
         }
     }
 
-    private fun createClientWithoutToken() {
+    private fun createClientWithoutToken(baseUrl: String) {
         _client = HttpClient(engine) {
             expectSuccess = true
             install(ContentNegotiation) {
@@ -138,16 +148,12 @@ internal class ListShopRemoteApiImpl(
 
                 url {
                     protocol = URLProtocol.HTTP
-                    //host = Constants.BASE_URL
+                    host = baseUrl
 
                 }
             }
         }
 
-    }
-
-    override fun sessionService(): UserSessionService {
-        TODO("Not yet implemented")
     }
 
     override fun token(): String? {

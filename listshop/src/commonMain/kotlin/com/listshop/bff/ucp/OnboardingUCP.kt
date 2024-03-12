@@ -4,12 +4,12 @@ import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.data.bff.BFFResult
 import com.listshop.bff.data.model.ListShoppingList
 import com.listshop.bff.data.model.ShoppingList
-import com.listshop.bff.remote.ListShopRemoteApi
+import com.listshop.bff.remote.ShoppingListApi
 import com.listshop.bff.repositories.SessionInfoRepository
 
 class OnboardingUCP internal constructor(
     private val sessionRepo: SessionInfoRepository,
-    private val listshopRemoteApi: ListShopRemoteApi,
+    private val shoppingListApi: ShoppingListApi,
     private val listShopAnalytics: ListShopAnalytics
 ) {
 

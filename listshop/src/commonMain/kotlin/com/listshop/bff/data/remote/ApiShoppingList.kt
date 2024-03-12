@@ -13,6 +13,8 @@ data class ApiShoppingList(
     val updated: String?,
     @SerialName("item_count")
     val itemCount: Int?,
+    @SerialName("user_id")
+    val userId: String?,
     @SerialName("layout_id")
     val layoutId: String?,
     @SerialName("name")
@@ -22,19 +24,23 @@ data class ApiShoppingList(
     //let legend: [ApiLegend]?
     //case legend = "legend
 
-    /*
 
-        var externalId: Int?
-    let categories: [ShoppingListCategory]?
-    let created: String?
-    let updated: String?
-    let layoutId: String?
-    let itemCount: Int?
-    var name: String?
-    let isStarterList: Bool?
-    var legend: ShoppingListLegend?
-    let loading: Bool
-    var lastLocalChange: String?
-    var lastSynced: String?
-     */
+)
+
+@Serializable
+data class ApiShoppingListEmbeddedList(
+    @SerialName("shopping_list")
+    val embeddedList: ApiShoppingList
+)
+
+@Serializable
+data class ApiShoppingListResourceList(
+    @SerialName("shoppingListResourceList")
+    val shoppingListResourceList: List<ApiShoppingListEmbeddedList>
+)
+
+@Serializable
+data class ApiShoppingListEmbedded(
+    @SerialName("_embedded")
+    val embeddedList: ApiShoppingListResourceList
 )

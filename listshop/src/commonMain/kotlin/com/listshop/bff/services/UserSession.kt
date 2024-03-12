@@ -7,6 +7,9 @@ data class UserSession(
     var userName: String?,
     var userToken: String?,
     var sessionState: UserSessionState,
-    var connectionState: ConnectionState
+    var connectionState: ConnectionState,
+    var appVersion: String,
+    var appBuild: String,
+    var baseUrl: String
 ) {
 }

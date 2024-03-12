@@ -3,10 +3,13 @@ package com.listshop.bff
 import app.cash.sqldelight.db.SqlDriver
 import co.touchlab.kmmbridgekickstart.AnalyticsHandle
 import co.touchlab.kmmbridgekickstart.AppAnalytics
+import co.touchlab.kmmbridgekickstart.AppInfo
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.remote.ListShopRemoteApiImpl
+import com.listshop.bff.remote.ShoppingListApi
+import com.listshop.bff.remote.ShoppingListApiImpl
 import com.listshop.bff.remote.TagApi
 import com.listshop.bff.remote.TagApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
@@ -21,7 +24,8 @@ import io.ktor.client.engine.HttpClientEngine
 internal const val SETTINGS_KEY = "KMMBridgeKickStartSettings"
 internal const val DB_NAME = "ListshopDb"
 
-internal abstract class BaseServiceLocator(private val analyticsHandle: AnalyticsHandle) :
+internal abstract class BaseServiceLocator(private val analyticsHandle: AnalyticsHandle,
+    private val appInfo: AppInfo) :
     ServiceLocator {
 
 
@@ -36,14 +40,15 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     override val onboardingUCP: OnboardingUCP by lazy {
         OnboardingUCP(
             sessionRepo = sessionInfoRepository,  // db
-            listshopRemoteApi = listShopRemoteApi,  // remote repo
+            shoppingListApi = shoppingListApi,  // remote repo
             listShopAnalytics = listShopAnalytics
         )
     }
 
     override val sessionService: UserSessionService by lazy {
         UserSessionService(
-            sessionRepo = sessionInfoRepository
+            sessionRepo = sessionInfoRepository,
+            appInfo = appInfo
         )
     }
 
@@ -53,6 +58,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     override val listShopAnalytics: ListShopAnalytics
         get() = analyticsHandle.listShopAnalytics
+
 
     override val httpClientAnalytics: HttpClientAnalytics
         get() = analyticsHandle.httpClientAnalytics
@@ -89,6 +95,12 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     private val tagApi: TagApi by lazy {
         TagApiImpl(
+            remoteApi = listShopRemoteApi
+        )
+    }
+
+    private val shoppingListApi: ShoppingListApi by lazy {
+        ShoppingListApiImpl(
             remoteApi = listShopRemoteApi
         )
     }
