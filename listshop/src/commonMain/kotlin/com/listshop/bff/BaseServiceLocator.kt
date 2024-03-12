@@ -5,10 +5,14 @@ import co.touchlab.kmmbridgekickstart.AnalyticsHandle
 import co.touchlab.kmmbridgekickstart.AppAnalytics
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
-import com.listshop.bff.remote.ListShopApi
-import com.listshop.bff.remote.ListShopApiImpl
+import com.listshop.bff.remote.ListShopRemoteApi
+import com.listshop.bff.remote.ListShopRemoteApiImpl
+import com.listshop.bff.remote.TagApi
+import com.listshop.bff.remote.TagApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
+import com.listshop.bff.repositories.SessionInfoRepository
 import com.listshop.bff.repositories.TagRepository
+import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.Settings
@@ -24,16 +28,22 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     override val tagUCP: TagUCP by lazy {
         TagUCP(
             dataRepo = tagRepository,
-            listshopApi = listShopApi,
+            tagApi = tagApi,
             listShopAnalytics = listShopAnalytics
         )
     }
 
     override val onboardingUCP: OnboardingUCP by lazy {
         OnboardingUCP(
-            dbHelper = tagRepository,
-            listshopApi = listShopApi,
+            sessionRepo = sessionInfoRepository,  // db
+            listshopRemoteApi = listShopRemoteApi,  // remote repo
             listShopAnalytics = listShopAnalytics
+        )
+    }
+
+    override val sessionService: UserSessionService by lazy {
+        UserSessionService(
+            sessionRepo = sessionInfoRepository
         )
     }
 
@@ -54,6 +64,12 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         )
     }
 
+    private val sessionInfoRepository: SessionInfoRepository by lazy {
+        SessionInfoRepository(
+            listShopDatabase = listShopDatabase
+        )
+    }
+
 
     private val listShopDatabase: ListShopDatabase by lazy {
         ListShopDatabase(
@@ -62,11 +78,18 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         )
     }
 
-    private val listShopApi: ListShopApi by lazy {
-        ListShopApiImpl(
+    private val listShopRemoteApi: ListShopRemoteApi by lazy {
+        ListShopRemoteApiImpl(
             engine = clientEngine,
+            sessionService = sessionService,
             httpClientAnalytics = httpClientAnalytics,
             listShopAnalytics = listShopAnalytics
+        )
+    }
+
+    private val tagApi: TagApi by lazy {
+        TagApiImpl(
+            remoteApi = listShopRemoteApi
         )
     }
 

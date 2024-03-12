@@ -2,12 +2,12 @@ package com.listshop.bff.ucp
 
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.data.model.Tag
-import com.listshop.bff.remote.ListShopApi
+import com.listshop.bff.remote.TagApi
 import com.listshop.bff.repositories.TagRepository
 
 class TagUCP internal constructor(
     private val dataRepo: TagRepository,
-    private val listshopApi: ListShopApi,
+    private val tagApi: TagApi,
     private val listShopAnalytics: ListShopAnalytics
 ) {
 
@@ -16,7 +16,7 @@ class TagUCP internal constructor(
         return if (cachedTags.isNotEmpty() && !forceReload) {
             cachedTags
         } else {
-            listshopApi.getAllTags().also {
+            tagApi.getAllTags().also {
                 listShopAnalytics.tagsFetchedFromNetwork(it.size)
                 dataRepo.deleteAll()
                 dataRepo.insertTags(it)
