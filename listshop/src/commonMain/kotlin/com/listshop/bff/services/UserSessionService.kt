@@ -10,7 +10,7 @@ import kotlinx.datetime.Clock
 
 class UserSessionService internal constructor(
     private val sessionRepo: SessionInfoRepository,
-    private val appInfo: AppInfo
+    public  val appInfo: AppInfo
 ) {
     private var _userSession: UserSession? = null
 
@@ -79,8 +79,8 @@ class UserSessionService internal constructor(
                 userInfo.userToken,
                 sessionState,
             connectionState,
-            appInfo.version,
-            appInfo.build,
+            appInfo.clientVersion ?: "unknown",
+            appInfo.buildNumber ?: "unknown",
             appInfo.baseUrl
             )
 
@@ -104,8 +104,8 @@ class UserSessionService internal constructor(
             userInfo.userToken,
             sessionState,
             ConnectionState.Unknown,
-            appInfo.version,
-            appInfo.build,
+            appInfo.clientVersion ?: "unknown",
+            appInfo.buildNumber ?: "unknown",
             appInfo.baseUrl)
     }
 

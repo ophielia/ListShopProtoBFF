@@ -10,7 +10,19 @@ import allshared
 
 @main
 struct iosApp: App {
-    let sdk = StartSDKKt.startSDK(analytics: IosAnalytics())
+// insert app info here....9
+/*
+        val appInfo = AppInfo("dummyUrl",
+            "name",
+            "model",
+            "os",
+            "osVersion",
+            "1.1.1",
+            "111",
+            "randomDeviceId"
+        )
+        */
+    let sdk = StartSDKKt.startSDK(analytics: IosAnalytics(), )
 
     
     var body: some Scene {

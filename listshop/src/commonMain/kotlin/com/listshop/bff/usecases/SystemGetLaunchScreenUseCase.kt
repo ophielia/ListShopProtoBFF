@@ -6,10 +6,12 @@ import com.listshop.bff.data.state.OnboardingViewState
 import com.listshop.bff.data.state.TransitionViewState
 import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.services.ListService
+import com.listshop.bff.services.UserService
 import com.listshop.bff.services.UserSessionService
 
 class SystemGetLaunchScreenUseCase(
     private val sessionService: UserSessionService,
+    private val userService: UserService,
     private val listService: ListService
 ) {
 
@@ -30,6 +32,8 @@ class SystemGetLaunchScreenUseCase(
     }
 
     private suspend fun goToListOfLists() : BFFResult<TransitionViewState> {
+        // authenticate user
+        userService.authenticateUser()
         val listOfLists = listService.retrieveListOfLists()
         val wrappedLists = ListShoppingList(listOfLists)
         return BFFResult.success(TransitionViewState.ListManagementScreen(wrappedLists))

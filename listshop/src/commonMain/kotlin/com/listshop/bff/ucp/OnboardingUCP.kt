@@ -15,7 +15,7 @@ class OnboardingUCP internal constructor(
 
     @Throws(Exception::class)
     suspend fun systemGetLaunchScreen(): BFFResult<TransitionViewState> {
-        val useCase = SystemGetLaunchScreenUseCase(sessionService,listService)
+        val useCase = SystemGetLaunchScreenUseCase(sessionService,, listService)
         return useCase.process()
     }
 

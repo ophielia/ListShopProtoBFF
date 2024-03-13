@@ -1,8 +1,9 @@
 package com.listshop.bff.remote
 
-import com.listshop.bff.data.model.Tag
+import com.listshop.bff.data.remote.ApiDeviceInfo
 
 internal interface UserApi {
 
-    suspend fun getAllTags(): List<Tag>
+    suspend fun authenticateUser(postDeviceInfo: ApiDeviceInfo)
+
 }

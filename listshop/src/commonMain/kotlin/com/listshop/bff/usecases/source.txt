@@ -214,3 +214,42 @@ public class SystemGetLandingScreenUseCase: UseCase {
         }
 
     }
+
+    public func authenticateUser() throws -> Promise<Void> {
+            if userSessionService.userSession.userToken == nil {
+                let lse = ListShopError(type: .core, title: "Authentication error",
+                        message: "Can't authenticate user without token")
+                throw lse
+            }
+            let deviceInfo = buildDeviceInfo()
+
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try? jsonEncoder.encode(deviceInfo)
+
+            return firstly {
+                try listShopRemoteApi.authenticateUser(postData: jsonData ?? Data())
+            }
+                    .then { [self] () -> Promise<ApiUserProperties> in
+                        // get user properties
+                        try listShopRemoteApi.retrieveUserProperties()
+
+                    }
+                    .done { [self] userProperties in
+                        // transform properties into String:String dictionary
+                        var dictionary: [String: String] = [:]
+                        for property in userProperties.userProperties {
+                            dictionary[property.key] = property.value
+                        }
+                        // save properties in session
+                        userSessionService.setUserProperties(properties: dictionary)
+                    }
+        }
+   enum CodingKeys: String, CodingKey {
+        case osVersion = "os_version"
+        case clientType = "client_type"
+        case clientVersion = "client_version"
+        case deviceId = "device_id"
+        case name = "name"
+        case model = "model"
+        case buildNumber = "build_number"
+        case os = "os"
