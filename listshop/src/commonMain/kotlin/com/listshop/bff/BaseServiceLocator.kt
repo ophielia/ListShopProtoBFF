@@ -15,6 +15,8 @@ import com.listshop.bff.remote.TagApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
 import com.listshop.bff.repositories.SessionInfoRepository
 import com.listshop.bff.repositories.TagRepository
+import com.listshop.bff.services.ListService
+import com.listshop.bff.services.ListServiceImpl
 import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
@@ -39,8 +41,8 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     override val onboardingUCP: OnboardingUCP by lazy {
         OnboardingUCP(
-            sessionRepo = sessionInfoRepository,  // db
-            shoppingListApi = shoppingListApi,  // remote repo
+            sessionService = sessionService,
+            listService = listService,  // remote repo
             listShopAnalytics = listShopAnalytics
         )
     }
@@ -63,6 +65,13 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     override val httpClientAnalytics: HttpClientAnalytics
         get() = analyticsHandle.httpClientAnalytics
 
+
+    private val listService: ListService by lazy {
+        ListServiceImpl(
+            remoteApi = shoppingListApi,
+            sessionService = sessionService
+        )
+    }
 
     private val tagRepository: TagRepository by lazy {
         TagRepository(

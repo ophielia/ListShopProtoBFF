@@ -1,0 +1,216 @@
+//
+//  BackgroundSyncLookupUseCase.swift
+//  SeedBeta
+//
+//  Created by Margaret Martin on 6/12/19.
+//  Copyright © 2019 Margaret Martin. All rights reserved.
+//
+
+import Foundation
+import PromiseKit
+import os
+
+public class SystemGetLandingScreenUseCase: UseCase {
+
+    typealias SystemGetLandingScreenUseCaseResult = Swift.Result<(TransitionViewState, TagTree), ListShopError>
+
+    let onComplete: (SystemGetLandingScreenUseCaseResult) -> Void
+    let syncService: SyncService
+    let userService: UserService
+    let sessionService: UserSessionService
+    let connectionStatus: ListShopConnectionStatus
+    let listService: ListService
+
+    init(connectionStatus: ListShopConnectionStatus,
+         syncService: SyncService,
+         userService: UserService,
+         sessionService: UserSessionService,
+         listService: ListService,
+         onComplete: ((SystemGetLandingScreenUseCaseResult) -> Void)?) {
+        self.syncService = syncService
+        self.userService = userService
+        self.sessionService = sessionService
+        self.listService = listService
+        self.connectionStatus = connectionStatus
+        self.onComplete = onComplete ?? { _ in
+        }
+    }
+
+    public func start() {
+        os_log("SystemGetLandingScreenUseCase - begin use case", log: Log.usecase, type: .info)
+
+        _ = firstly { () -> Promise<Bool> in
+            // make sure to finish syncing local data first before moving to local list
+            try syncService.checkApiCompatibility(connectionStatus: connectionStatus)
+        }
+                .done { [self] compatible in
+                    if compatible {
+                        loadForSession()
+                    } else {
+                        os_log("SystemGetLandingScreenUseCase - not compatible with api", log: Log.usecase, type: .info)
+                        let lse = ListShopError(type: .core, title: "UPGRADEREQUIRED", message: "This version of the app is obsolete.")
+
+                        onComplete(.failure(lse))
+                    }
+                }
+                .catch { error in
+                    os_log("Error: %{public}@ - url not available in SystemGetLandingScreenUseCase", log: Log.usecase, type: .error, error.localizedDescription)
+
+                    self.loadForSession()
+                }
+
+    }
+
+    public func loadForSession() {
+        // launch background sync of lookup info here
+        let session = sessionService.userSession
+        let firstTimeOpened = session.userLastSeen == nil
+        sessionService.setUserLastSeen()
+
+        switch session.sessionState {
+
+        case .AnonNoList, .Anon, .UserLoggedOut:
+            // destination - onboarding, unless first time open
+            let goal = firstTimeOpened ? TransitionViewState.guides(.welcomeGuide) : TransitionViewState.onboarding(.choose)
+            syncLookupDataOnly(resultTransition: goal,
+                    connectionStatus: connectionStatus)
+        default:
+            // destination - server list
+            syncLookupDataAndMergeList(connectionStatus: connectionStatus)
+        }
+
+    }
+
+    private func syncLookupDataOnly(resultTransition: TransitionViewState,
+                                    connectionStatus: ListShopConnectionStatus) {
+        firstly { () -> Promise<TagTree> in
+            // make sure to finish syncing local data first before moving to local list
+            try syncService.syncLookupData(connectionStatus: connectionStatus)
+        }
+                .done { tagTree in
+                    self.onComplete(.success((resultTransition, tagTree)))
+                }
+                .catch { error in
+                    print("Error: \(error) while syncing local list")
+                    let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
+                    self.onComplete(.failure(lse))
+                }
+    }
+
+    private func syncLookupDataAndMergeList(connectionStatus: ListShopConnectionStatus) {
+        firstly { () -> Promise<Void> in
+            // make sure to finish syncing local data first before moving to local list
+            try userService.authenticateUser()
+        }
+                .then { [weak self] () -> Promise<TagTree> in
+                    if let strongself = self {
+                        // make sure to finish syncing local data first before moving to local list
+                        return try strongself.syncService.syncLookupData(connectionStatus: connectionStatus)
+                    } else {
+                        throw ListShopError.generalError
+                    }
+                }
+                .done { tagTree in
+                    self.retrieveSyncedList(with: tagTree)
+                }
+                .catch { error in
+                    print("Error: \(error) while syncing local list")
+                    let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
+                    self.onComplete(.failure(lse))
+                }
+    }
+
+    private func retrieveSyncedList(with tagTree: TagTree) {
+        firstly {
+            try syncService.syncServerList(connectionStatus: connectionStatus)
+        }
+                .done { (shoppingList: ShoppingList) -> Void in
+                    self.goToListScreen(with: shoppingList, and: tagTree)
+                }
+                .catch { _ in
+                    self.getMostRecentList(with: tagTree)
+                }
+    }
+
+    private func getMostRecentList(with tagTree: TagTree) {
+        firstly {
+            listService.retrieveMostRecentList()
+        }
+                .done { (shoppingList: ShoppingList) -> Void in
+                    self.goToListScreen(with: shoppingList, and: tagTree)
+                }
+                .catch { error in
+                    print("Error: \(error) while syncing server list - most recent")
+                    let lse = ListShopError(type: .core, title: "CantSyncServerList", message: "Error while syncing server list")
+                    self.onComplete(.failure(lse))
+                }
+    }
+
+    private func goToListScreen(with shoppingList: ShoppingList, and tagTree: TagTree) {
+        let cStat = connectionStatus
+        let bgq = DispatchQueue.global(qos: .userInitiated)
+        firstly { () -> Promise<[ShoppingList]> in
+            // make sure to finish syncing local data first before moving to local list
+            try listService.retrieveListOfLists()
+        }
+                .done { listOfLists in
+                    self.onComplete(.success((TransitionViewState.listScreen(shoppingList, listOfLists), tagTree)))
+                }
+                .done(on: bgq) { _ in
+                    // fire and forget statistics
+                    _ = try? self.syncService.syncStatistics(connectionStatus: cStat)
+                }
+                .catch { error in
+                    print("Error: \(error) while syncing local list")
+                    let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
+                    self.onComplete(.failure(lse))
+                }
+    }
+
+    private func destinationLocalList(connectionStatus: ListShopConnectionStatus) {
+        // sync local list
+
+        firstly { () -> Promise<TagTree> in
+            // make sure to finish syncing local data first before moving to local list
+            try syncService.syncLookupData(connectionStatus: connectionStatus)
+        }
+                .then { tagTree -> Promise<(TagTree, ShoppingList)> in
+                    self.listService.retrieveLocalList().map {
+                        (tagTree, $0)
+                    }
+                }
+                .done { (tagTree, shoppingList) in
+                    self.goToListScreen(with: shoppingList, and: tagTree)
+                }
+                .catch { error in
+                    print("Error: \(error) while syncing local list")
+                    let lse = ListShopError(type: .core, title: "CantSyncLocalList", message: "Error while syncing local list")
+                    self.onComplete(.failure(lse))
+                }
+    }
+
+}
+
+
+        firstly { () -> Promise<Void> in
+            // make sure to finish syncing local data first before moving to local list
+            try userService.authenticateUser()
+        }
+            .done { [weak self] in
+                self?.goToListOfListsScreen()
+        }
+            .catch { error in
+                print("Error: \(error) while syncing local list")
+                let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
+                self.onComplete(.failure(lse))
+        }
+   private func goToListOfListsScreen() {
+        firstly { () -> Promise<[ShoppingList]> in
+            // make sure to finish syncing local data first before moving to local list
+            try listService.retrieveListOfLists()
+        }
+            .done { listOfLists in
+                self.onComplete(.success(TransitionViewState.listManagementScreen( listOfLists)))
+        }
+
+    }

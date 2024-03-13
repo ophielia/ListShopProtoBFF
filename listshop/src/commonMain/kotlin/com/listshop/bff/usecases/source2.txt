@@ -1,0 +1,46 @@
+//
+//  ListService.swift
+//  SeedBeta
+//
+//  Created by Margaret Martin on 07/07/2019.
+//  Copyright © 2019 Margaret Martin. All rights reserved.
+//
+
+import Foundation
+
+import PromiseKit
+
+public protocol ListService {
+
+    func retrieveLocalList() -> Promise<ShoppingList>
+    func clearLocalList()
+    func replaceLocalList(shoppingList: ShoppingList) -> Promise<Void>
+
+    func refreshListAfterUpdate(callingContext: CallingContext) -> Promise<ShoppingList>
+    func refreshAndSaveServerList() -> Promise<ShoppingList>
+    func retrieveServerList(listId: Int32) -> Promise<ShoppingList>
+    func retrieveMostRecentList() -> Promise<ShoppingList>
+    func createServerList() -> Promise<String>
+    func processLegend(api legend: [ApiLegend]) -> ShoppingListLegend
+
+    func retrieveListOfLists() throws -> Promise<[ShoppingList]>
+    func deleteList(listId: Int) throws -> Promise<[ShoppingList]>
+    func updateListProperties(listId: Int, listName: String, isStarterList: Bool) throws -> Promise<Void>
+
+    func crossOffItem(item id: Int, tag tagId: Int, isCrossedOff crossedOff: Bool, _ callingContext: CallingContext) throws -> Promise<Void>
+    func crossOffSelectedItems(tagList: [Int], listId: Int, callingContext: CallingContext) throws -> Promise<Void>
+    func crossOffAllItems(setCrossedOff: Bool, callingContext: CallingContext) throws -> Promise<Void>
+    func sortBySourceTag(shoppingList: ShoppingList, legend: ShoppingListLegend, targetSortId: String?) -> ShoppingList
+    func copyItemsFromList(tagList: [Int], listId: Int, targetListId: Int) -> Promise<Void>
+    func removeDishFromActiveList(dishId: String) throws -> Promise<Void>
+    func addDishToActiveList(dishId: String) throws -> Promise<Void>
+    func addDishToList(dishId: String, listId: String) throws -> Promise<Void>
+    func addDishesToList(dishIds: [String], listId: String) throws -> Promise<Void>
+    func addItemToList(callingContext: CallingContext, tagId: String) throws -> Promise<Void>
+    func addListToList(sourceListId: String, targetListId: String, callingContext: CallingContext) throws -> Promise<Void>
+    func removeListFromList(sourceListId: String, targetListId: String, callingContext: CallingContext) throws -> Promise<Void>
+    func moveItemsFromList(tagList: [Int], listId: Int, targetListId: Int) -> Promise<Void>
+    func removeItemsFromList(tagList: [Int], listId: Int, callingContext: CallingContext) -> Promise<Void>
+    func removeItemsFromList(removeType: OperationType, listId: Int, callingContext: CallingContext) throws -> Promise<Void>
+    func updateItemCount(listId: Int, tagId: Int, itemCount: Int, callingContext: CallingContext) -> Promise<Void>
+}
