@@ -1,7 +1,9 @@
-package com.listshop.bff.services
+package com.listshop.bff.services.impl
 
 import com.listshop.bff.data.remote.ApiDeviceInfo
 import com.listshop.bff.remote.UserApi
+import com.listshop.bff.services.UserService
+import com.listshop.bff.services.UserSessionService
 
 class UserServiceImpl internal constructor(
     private val remoteApi: UserApi,
@@ -17,7 +19,7 @@ class UserServiceImpl internal constructor(
     }
 
     private fun buildDeviceInfo(): ApiDeviceInfo {
-        val appInfo = sessionService.appInfo
+        val appInfo = sessionService.currentAppInfo()
         return ApiDeviceInfo(
            appInfo.name,
             appInfo.model,

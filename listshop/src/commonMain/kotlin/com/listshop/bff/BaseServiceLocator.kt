@@ -12,12 +12,17 @@ import com.listshop.bff.remote.ShoppingListApi
 import com.listshop.bff.remote.ShoppingListApiImpl
 import com.listshop.bff.remote.TagApi
 import com.listshop.bff.remote.TagApiImpl
+import com.listshop.bff.remote.UserApi
+import com.listshop.bff.remote.UserApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
 import com.listshop.bff.repositories.SessionInfoRepository
 import com.listshop.bff.repositories.TagRepository
 import com.listshop.bff.services.ListService
-import com.listshop.bff.services.ListServiceImpl
+import com.listshop.bff.services.UserService
 import com.listshop.bff.services.UserSessionService
+import com.listshop.bff.services.impl.ListServiceImpl
+import com.listshop.bff.services.impl.UserServiceImpl
+import com.listshop.bff.services.impl.UserSessionServiceImpl
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.Settings
@@ -43,12 +48,13 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         OnboardingUCP(
             sessionService = sessionService,
             listService = listService,  // remote repo
+            userService = userService,
             listShopAnalytics = listShopAnalytics
         )
     }
 
     override val sessionService: UserSessionService by lazy {
-        UserSessionService(
+        UserSessionServiceImpl(
             sessionRepo = sessionInfoRepository,
             appInfo = appInfo
         )
@@ -69,6 +75,13 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     private val listService: ListService by lazy {
         ListServiceImpl(
             remoteApi = shoppingListApi,
+            sessionService = sessionService
+        )
+    }
+
+    private val userService: UserService by lazy {
+        UserServiceImpl(
+            remoteApi = userApi,
             sessionService = sessionService
         )
     }
@@ -104,6 +117,12 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     private val tagApi: TagApi by lazy {
         TagApiImpl(
+            remoteApi = listShopRemoteApi
+        )
+    }
+
+    private val userApi: UserApi by lazy {
+        UserApiImpl(
             remoteApi = listShopRemoteApi
         )
     }
