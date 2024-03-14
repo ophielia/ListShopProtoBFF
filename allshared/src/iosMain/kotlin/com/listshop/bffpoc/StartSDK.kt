@@ -9,8 +9,7 @@ fun startSDK(analytics: Analytics, appInfo : AppInfo): SDKHandle {
     return SDKHandle(
         tagUCP = tagUCPStartup(analyticsHandle, appInfo),
         onboardingUCP = onboardingUCPStartup(analyticsHandle, appInfo),
+        sessionService = sessionServiceStartup(analyticsHandle, appInfo),
         appAnalytics = analyticsHandle.appAnalytics
     )
 }
-
-fun sayHello() = "Hello from Kotlin!"

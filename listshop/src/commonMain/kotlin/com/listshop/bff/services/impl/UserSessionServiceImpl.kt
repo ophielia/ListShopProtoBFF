@@ -2,7 +2,6 @@ package com.listshop.bff.services.impl
 
 import co.touchlab.kmmbridgekickstart.AppInfo
 import com.listshop.bff.data.model.UserInfo
-import com.listshop.bff.data.state.ConnectionState
 import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.db.UserInfoEntity
 import com.listshop.bff.repositories.SessionInfoRepository
@@ -12,7 +11,7 @@ import kotlinx.datetime.Clock
 
 class UserSessionServiceImpl internal constructor(
     private val sessionRepo: SessionInfoRepository,
-    public val appInfo: AppInfo
+    val appInfo: AppInfo
 ) : UserSessionService {
     private var _userSession: UserSession? = null
 
@@ -29,21 +28,21 @@ class UserSessionServiceImpl internal constructor(
     }
 
     override fun setUserToken(token: String) {
-        var userInfo = getUserInfo()
+        val userInfo = getUserInfo()
         userInfo.userToken = token
         updateUserInfo(userInfo)
         refreshUserSession()
     }
 
     override fun setUserName(name: String) {
-        var userInfo = getUserInfo()
+        val userInfo = getUserInfo()
         userInfo.userName = name
         updateUserInfo(userInfo)
         refreshUserSession()
     }
 
     override fun setUserLastSeenToNow() {
-        var userInfo = getUserInfo()
+        val userInfo = getUserInfo()
         val now = Clock.System.now()
         userInfo.userLastSeen = now.toString()
         updateUserInfo(userInfo)
@@ -51,7 +50,7 @@ class UserSessionServiceImpl internal constructor(
     }
 
     override fun setuserLastSignedInToNow() {
-        var userInfo = getUserInfo()
+        val userInfo = getUserInfo()
         val now = Clock.System.now()
         userInfo.userLastSignedIn = now.toString()
         updateUserInfo(userInfo)
@@ -78,17 +77,15 @@ class UserSessionServiceImpl internal constructor(
     }
 
     private fun refreshUserSession() {
-        var userInfo = getOrCreateUserInfoEntity()
+        val userInfo = getOrCreateUserInfoEntity()
         //MM nfl - list info here
         val sessionState = determineUserSessionState(userInfo)
-        val connectionState = _userSession?.connectionState ?: ConnectionState.Unknown
         _userSession = UserSession(
             userInfo.userName,
             userInfo.userToken,
             userInfo.userLastSeen,
             userInfo.userLastSignedIn,
             sessionState,
-            connectionState,
             appInfo.clientVersion ?: "unknown",
             appInfo.buildNumber ?: "unknown",
             appInfo.baseUrl
@@ -116,7 +113,6 @@ class UserSessionServiceImpl internal constructor(
             userInfo.userLastSeen,
             userInfo.userLastSignedIn,
             sessionState,
-            ConnectionState.Unknown,
             appInfo.clientVersion ?: "unknown",
             appInfo.buildNumber ?: "unknown",
             appInfo.baseUrl

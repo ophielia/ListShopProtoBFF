@@ -2,6 +2,7 @@ package com.listshop.bff.ucp
 
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.data.bff.BFFResult
+import com.listshop.bff.data.state.ConnectionStatus
 import com.listshop.bff.data.state.TransitionViewState
 import com.listshop.bff.services.ListService
 import com.listshop.bff.services.UserService
@@ -16,8 +17,8 @@ class OnboardingUCP internal constructor(
 ) {
 
     @Throws(Exception::class)
-    suspend fun systemGetLaunchScreen(): BFFResult<TransitionViewState> {
-        val useCase = SystemGetLaunchScreenUseCase(sessionService,userService, listService)
+    suspend fun systemGetLaunchScreen(connectionStatus: ConnectionStatus): BFFResult<TransitionViewState> {
+        val useCase = SystemGetLaunchScreenUseCase(connectionStatus,sessionService,userService, listService)
         return useCase.process()
     }
 

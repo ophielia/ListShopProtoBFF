@@ -11,9 +11,11 @@ fun startSDK(analytics: Analytics, context: Context,
     val analyticsHandle = initAnalytics(analytics)
     val tagUCP = tagUCPStartup(context, analyticsHandle, appInfo)
     val onboardingUCP = onboardingUCPStartup(context, analyticsHandle, appInfo)
+    val sessionService = sessionServiceStartup(context, analyticsHandle, appInfo)
     return SDKHandle(
         appAnalytics = analyticsHandle.appAnalytics,
         tagUCP = tagUCP,
+        sessionService = sessionService,
         onboardingUCP = onboardingUCP
 
     )

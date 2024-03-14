@@ -1,6 +1,6 @@
 package com.listshop.bff.data.state
 
-enum class ConnectionState {
+enum class ConnectionStatus {
     Online,
     Offline,
     Unknown

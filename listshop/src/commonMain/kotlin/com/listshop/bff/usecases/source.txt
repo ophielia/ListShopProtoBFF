@@ -253,3 +253,19 @@ public class SystemGetLandingScreenUseCase: UseCase {
         case model = "model"
         case buildNumber = "build_number"
         case os = "os"
+
+            case noinfo
+            case connected
+            case notConnected
+
+            func description() -> String {
+                switch self {
+                case .noinfo:
+                    return "noinfo"
+                case .connected:
+                    return "connected"
+                case .notConnected:
+                    return "notConnected"
+
+                }
+            }
