@@ -1,9 +1,11 @@
 package com.listshop.bff.services.impl
 
 import com.listshop.bff.data.remote.ApiDeviceInfo
+import com.listshop.bff.data.remote.PostUserLogin
 import com.listshop.bff.remote.UserApi
 import com.listshop.bff.services.UserService
 import com.listshop.bff.services.UserSessionService
+import kotlin.math.min
 
 class UserServiceImpl internal constructor(
     private val remoteApi: UserApi,
@@ -18,10 +20,21 @@ class UserServiceImpl internal constructor(
         //MM nfl - do properties here
     }
 
+    override suspend fun signInUser(userName: String, password: String) {
+        val postLoginUser = prepareSignInObject(userName, password)
+
+        val token = remoteApi.signInUser(postLoginUser)
+
+        // save results
+        sessionService.setuserLastSignedInToNow()
+        sessionService.setUserToken(token)
+        sessionService.setUserName(userName)
+    }
+
     private fun buildDeviceInfo(): ApiDeviceInfo {
         val appInfo = sessionService.currentAppInfo()
         return ApiDeviceInfo(
-           appInfo.name,
+            appInfo.name,
             appInfo.model,
             appInfo.os,
             appInfo.osVersion,
@@ -32,5 +45,23 @@ class UserServiceImpl internal constructor(
         )
     }
 
+    private fun prepareSignInObject(userName: String, password: String): PostUserLogin {
+        val cleanedName = cleanStringForServer(userName, RemoteConstants.normalStringLength)
+        val cleanedPassword = cleanStringForServer(password, RemoteConstants.normalStringLength)
+        val deviceInfo = buildDeviceInfo()
+        return PostUserLogin(cleanedName, cleanedPassword, deviceInfo)
+    }
 
+    private fun cleanStringForServer(value: String, length: Int): String {
+        val cutLength = min(length, value.length)
+        return value.subSequence(0, cutLength).toString()
+    }
+
+
+}
+
+class RemoteConstants {
+    companion object {
+        const val normalStringLength = 300
+    }
 }

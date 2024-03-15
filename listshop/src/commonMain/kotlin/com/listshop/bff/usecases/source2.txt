@@ -1,46 +1,208 @@
+public struct WrappedUser: Codable {
+    let user: ApiUser?
+
+}
+
+public struct ApiUser: Codable {
+    let email: String?
+    let password: String?
+    let roles: [String]?
+    let token: String?
+    let creationDate: String?
+    let userName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case email = "email"
+        case password = "password"
+        case roles = "roles"
+        case token = "token"
+        case creationDate = "creation_date"
+        case userName = "user_name"
+    }
+
+}
+
 //
-//  ListService.swift
+//  SignInUseCase.swift
 //  SeedBeta
 //
-//  Created by Margaret Martin on 07/07/2019.
+//  Created by Margaret Martin on 6/15/19.
 //  Copyright © 2019 Margaret Martin. All rights reserved.
 //
 
 import Foundation
-
 import PromiseKit
 
-public protocol ListService {
+public class SignInUseCase: UseCase {
+    //MM TARGET USE CASE
+    typealias OnboardingUseCaseResult = Swift.Result<TransitionViewState, ListShopError>
 
-    func retrieveLocalList() -> Promise<ShoppingList>
-    func clearLocalList()
-    func replaceLocalList(shoppingList: ShoppingList) -> Promise<Void>
+    let userService: UserService
+    let sessionService: UserSessionService
+    let listService: ListService
+    let syncService: SyncService
+    let onComplete: (OnboardingUseCaseResult) -> Void
+    let onStart: () -> Void
+    let userName: String
+    let userPassword: String
 
-    func refreshListAfterUpdate(callingContext: CallingContext) -> Promise<ShoppingList>
-    func refreshAndSaveServerList() -> Promise<ShoppingList>
-    func retrieveServerList(listId: Int32) -> Promise<ShoppingList>
-    func retrieveMostRecentList() -> Promise<ShoppingList>
-    func createServerList() -> Promise<String>
-    func processLegend(api legend: [ApiLegend]) -> ShoppingListLegend
+    init(userName: String,
+         password: String,
+         userService: UserService,
+         sessionService: UserSessionService,
+         listService: ListService,
+         syncService: SyncService,
+         onStart: (() -> Void)?,
+         onComplete: ((OnboardingUseCaseResult) -> Void)?) {
+        self.userName = userName
+        userPassword = password
+        self.userService = userService
+        self.listService = listService
+        self.sessionService = sessionService
+        self.syncService = syncService
+        self.onStart = onStart ?? {
+        }
+        self.onComplete = onComplete ?? { result in
+        }
+    }
 
-    func retrieveListOfLists() throws -> Promise<[ShoppingList]>
-    func deleteList(listId: Int) throws -> Promise<[ShoppingList]>
-    func updateListProperties(listId: Int, listName: String, isStarterList: Bool) throws -> Promise<Void>
+    public func start() {
+        onStart()
 
-    func crossOffItem(item id: Int, tag tagId: Int, isCrossedOff crossedOff: Bool, _ callingContext: CallingContext) throws -> Promise<Void>
-    func crossOffSelectedItems(tagList: [Int], listId: Int, callingContext: CallingContext) throws -> Promise<Void>
-    func crossOffAllItems(setCrossedOff: Bool, callingContext: CallingContext) throws -> Promise<Void>
-    func sortBySourceTag(shoppingList: ShoppingList, legend: ShoppingListLegend, targetSortId: String?) -> ShoppingList
-    func copyItemsFromList(tagList: [Int], listId: Int, targetListId: Int) -> Promise<Void>
-    func removeDishFromActiveList(dishId: String) throws -> Promise<Void>
-    func addDishToActiveList(dishId: String) throws -> Promise<Void>
-    func addDishToList(dishId: String, listId: String) throws -> Promise<Void>
-    func addDishesToList(dishIds: [String], listId: String) throws -> Promise<Void>
-    func addItemToList(callingContext: CallingContext, tagId: String) throws -> Promise<Void>
-    func addListToList(sourceListId: String, targetListId: String, callingContext: CallingContext) throws -> Promise<Void>
-    func removeListFromList(sourceListId: String, targetListId: String, callingContext: CallingContext) throws -> Promise<Void>
-    func moveItemsFromList(tagList: [Int], listId: Int, targetListId: Int) -> Promise<Void>
-    func removeItemsFromList(tagList: [Int], listId: Int, callingContext: CallingContext) -> Promise<Void>
-    func removeItemsFromList(removeType: OperationType, listId: Int, callingContext: CallingContext) throws -> Promise<Void>
-    func updateItemCount(listId: Int, tagId: Int, itemCount: Int, callingContext: CallingContext) -> Promise<Void>
+        // call signIn in UserService, which returns a token
+        firstly(execute: {
+            try userService.signInUser(userName: userName, password: userPassword)
+        })
+                .then { () -> Promise<[ShoppingList]> in
+                    try self.listService.retrieveListOfLists()
+                }
+                .done({ shoppingLists in
+                    self.onComplete(.success(TransitionViewState.listManagementScreen(shoppingLists)))
+                })
+                .catch { error in
+                    if let lse = error as? ListShopError {
+                        if (lse.title == "POSTINGDATA") {
+                            // this is a merge list problem
+                            let lse = ListShopError.mergeError
+                            self.onComplete(.failure(lse))
+                        } else {
+                            // this is a sign-in / credentials problem
+                            let lse = ListShopError.signInError
+                            self.onComplete(.failure(lse))
+                        }
+
+                        print("Error signing in: \(lse.title) \(lse)")
+                    } else {
+                        let lse = ListShopError.signInError
+                        self.onComplete(.failure(lse))
+                    }
+                }
+
+    }
+
+
+
+
 }
+struct LoginUser: Codable {
+
+    var username: String?
+    var password: String?
+
+    var deviceInfo: UserDeviceInfo?
+
+    enum CodingKeys: String, CodingKey {
+        case username = "username"
+        case password = "password"
+        case deviceInfo = "device_info"
+    }
+}
+
+
+    private func doSignInUser(userName: String, password: String) throws -> Promise<Void> {
+        let cleanedName = cleanStringForServer(userName, ListShopRemoteConstants.normalStringLength)
+        let cleanedPassword = cleanStringForServer(password, ListShopRemoteConstants.normalStringLength)
+        let data = encodeSignInData(with: cleanedName, cleanedPassword)
+        return firstly {
+            try listShopRemoteApi.signInUser(postData: data)
+        }
+                .done { [self] token in
+                    // save token and username in session
+                    userSessionService.setUserLastSignedIn()
+                    userSessionService.setUserToken(token: token)
+                    userSessionService.setUserName(userName: userName)
+                }
+    }
+
+
+        private func encodeSignInData(with userName: String, _ passwordStr: String) -> Data {
+            let clientVersion = userSessionService.userSession.version
+            let buildNumber = userSessionService.userSession.buildNumber
+
+            let device = UIDevice.current
+            var deviceId = ""
+            if let identifier = device.identifierForVendor {
+                deviceId = identifier.uuidString
+            }
+            let deviceInfo = UserDeviceInfo(name: device.name,
+                    model: device.model,
+                    os: device.systemName,
+                    osVersion: device.systemVersion,
+                    clientVersion: clientVersion,
+                    buildNumber: buildNumber,
+                    deviceId: deviceId)
+
+            let loginUser = LoginUser(username: userName, password: passwordStr, deviceInfo: deviceInfo)
+
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try? jsonEncoder.encode(loginUser)
+            return jsonData ?? Data()
+        }
+
+            public func signInUser(postData: Data) throws -> Promise<String> {
+                // put together url
+                guard let url = URL(string: remoteSession.baseUrlString + "/auth") else {
+                    os_log("Cant convert string to url.", log: Log.network, type: .info)
+                    let lse = ListShopError(type: .network, title: "CANTMAKEURL", message: "Can't construct url")
+                    return Promise(error: lse)
+                }
+                // put together request
+                var request = remoteSession.request(for: url)
+                request.httpMethod = "POST"
+                request.httpBody = postData
+
+                return try signUpOrSignInUser(urlRequest: request)
+            }
+
+             private func signUpOrSignInUser(urlRequest: URLRequest) throws -> Promise<String> {
+
+                    remoteSession.session.dataTask(.promise, with: urlRequest)
+                            .compactMap {
+                                if let httpResponse = $0.response as? HTTPURLResponse,
+                                   httpResponse.statusCode >= 400 {
+                                    let jsonDecoder = JSONDecoder()
+                                    // we have an error code - lets see which one...
+                                    if let errorBody = try? jsonDecoder.decode(HttpError.self, from: $0.data),
+                                       let message = errorBody.message,
+                                       message.contains("present") {
+                                        let lse = ListShopError(type: .network, title: "USEREXISTS", message: "Error while creating user")
+                                        os_log("Status code %d returned for call on %{public}@.", log: Log.network, type: .error, httpResponse.statusCode, urlRequest.url?.absoluteString ?? "unknown")
+                                        throw lse
+                                    }
+
+                                    let lse = ListShopError(type: .network, title: "POSTINGDATA", message: "Error while posting data")
+                                    os_log("Status code %d returned for call on %{public}@.", log: Log.network, type: .error, httpResponse.statusCode, urlRequest.url?.absoluteString ?? "unknown")
+                                    throw lse
+                                }
+                                guard let result = NSString(data: $0.data, encoding: String.Encoding.utf8.rawValue) as String? else {
+                                    let lse = ListShopError(type: .network, title: "SIGNUP", message: "Can't read result")
+                                    throw lse
+                                }
+                                guard let token = self.stripToken(from: result) else {
+                                    let lse = ListShopError(type: .network, title: "SIGNUP", message: "Can't get token out of result.")
+                                    throw lse
+                                }
+
+                                return token
+                            }
+                }

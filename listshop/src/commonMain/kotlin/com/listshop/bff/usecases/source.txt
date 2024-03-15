@@ -1,154 +1,120 @@
+        func makeSignInUseCase(userName: String,
+                               password: String,
+                               onStart: @escaping () -> Void,
+                               onComplete: @escaping (OnboardingTagTreeUseCaseResult) -> Void) -> UseCase {
+            let useCase = SignInUseCase(userName: userName,
+                    password: password,
+                    userService: userService,
+                    sessionService: sessionService,
+                    listService: listService,
+                    syncService: syncService,
+                    onStart: onStart,
+                    onComplete: onComplete)
+            return useCase
+        }
+
+
 //
-//  BackgroundSyncLookupUseCase.swift
+//  SignInUseCase.swift
 //  SeedBeta
 //
-//  Created by Margaret Martin on 6/12/19.
+//  Created by Margaret Martin on 6/15/19.
 //  Copyright © 2019 Margaret Martin. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
-import os
 
-public class SystemGetLandingScreenUseCase: UseCase {
+public class SignInUseCase: UseCase {
 
-    typealias SystemGetLandingScreenUseCaseResult = Swift.Result<(TransitionViewState, TagTree), ListShopError>
+    typealias OnboardingUseCaseResult = Swift.Result<(TransitionViewState, TagTree), ListShopError>
 
-    let onComplete: (SystemGetLandingScreenUseCaseResult) -> Void
-    let syncService: SyncService
     let userService: UserService
     let sessionService: UserSessionService
-    let connectionStatus: ListShopConnectionStatus
     let listService: ListService
+    let syncService: SyncService
+    let onComplete: (OnboardingUseCaseResult) -> Void
+    let onStart: () -> Void
+    let userName: String
+    let userPassword: String
 
-    init(connectionStatus: ListShopConnectionStatus,
-         syncService: SyncService,
+    init(userName: String,
+         password: String,
          userService: UserService,
          sessionService: UserSessionService,
          listService: ListService,
-         onComplete: ((SystemGetLandingScreenUseCaseResult) -> Void)?) {
-        self.syncService = syncService
+         syncService: SyncService,
+         onStart: (() -> Void)?,
+         onComplete: ((OnboardingUseCaseResult) -> Void)?) {
+        self.userName = userName
+        userPassword = password
         self.userService = userService
-        self.sessionService = sessionService
         self.listService = listService
-        self.connectionStatus = connectionStatus
-        self.onComplete = onComplete ?? { _ in
+        self.sessionService = sessionService
+        self.syncService = syncService
+        self.onStart = onStart ?? {
+        }
+        self.onComplete = onComplete ?? { result in
         }
     }
 
     public func start() {
-        os_log("SystemGetLandingScreenUseCase - begin use case", log: Log.usecase, type: .info)
+        onStart()
 
-        _ = firstly { () -> Promise<Bool> in
-            // make sure to finish syncing local data first before moving to local list
-            try syncService.checkApiCompatibility(connectionStatus: connectionStatus)
-        }
-                .done { [self] compatible in
-                    if compatible {
-                        loadForSession()
-                    } else {
-                        os_log("SystemGetLandingScreenUseCase - not compatible with api", log: Log.usecase, type: .info)
-                        let lse = ListShopError(type: .core, title: "UPGRADEREQUIRED", message: "This version of the app is obsolete.")
-
-                        onComplete(.failure(lse))
+        // call signIn in UserService, which returns a token
+        firstly(execute: {
+            try userService.signInUser(userName: userName, password: userPassword)
+        })
+                .then({ [weak self] () -> Promise<Bool> in
+                    self?.syncService.hasLocalList() ?? Promise.value(false)
+                })
+                .then { hasLocal -> Promise<(Bool, TagTree)> in
+                    return try self.syncService.syncLookupData(connectionStatus: .connected).map {
+                        (hasLocal, $0)
                     }
                 }
-                .catch { error in
-                    os_log("Error: %{public}@ - url not available in SystemGetLandingScreenUseCase", log: Log.usecase, type: .error, error.localizedDescription)
-
-                    self.loadForSession()
-                }
-
-    }
-
-    public func loadForSession() {
-        // launch background sync of lookup info here
-        let session = sessionService.userSession
-        let firstTimeOpened = session.userLastSeen == nil
-        sessionService.setUserLastSeen()
-
-        switch session.sessionState {
-
-        case .AnonNoList, .Anon, .UserLoggedOut:
-            // destination - onboarding, unless first time open
-            let goal = firstTimeOpened ? TransitionViewState.guides(.welcomeGuide) : TransitionViewState.onboarding(.choose)
-            syncLookupDataOnly(resultTransition: goal,
-                    connectionStatus: connectionStatus)
-        default:
-            // destination - server list
-            syncLookupDataAndMergeList(connectionStatus: connectionStatus)
-        }
-
-    }
-
-    private func syncLookupDataOnly(resultTransition: TransitionViewState,
-                                    connectionStatus: ListShopConnectionStatus) {
-        firstly { () -> Promise<TagTree> in
-            // make sure to finish syncing local data first before moving to local list
-            try syncService.syncLookupData(connectionStatus: connectionStatus)
-        }
-                .done { tagTree in
-                    self.onComplete(.success((resultTransition, tagTree)))
-                }
-                .catch { error in
-                    print("Error: \(error) while syncing local list")
-                    let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
-                    self.onComplete(.failure(lse))
-                }
-    }
-
-    private func syncLookupDataAndMergeList(connectionStatus: ListShopConnectionStatus) {
-        firstly { () -> Promise<Void> in
-            // make sure to finish syncing local data first before moving to local list
-            try userService.authenticateUser()
-        }
-                .then { [weak self] () -> Promise<TagTree> in
-                    if let strongself = self {
-                        // make sure to finish syncing local data first before moving to local list
-                        return try strongself.syncService.syncLookupData(connectionStatus: connectionStatus)
+                .then { (hasLocal, tagTree) -> Promise<(ShoppingList, TagTree)> in
+                    //MM note - the handleLocalListOnLogin is buggy, and keeping the user
+                    // from logging in, if their current list has been deleted on the server
+                    /*
+                     if (hasLocal) {
+                        return self.syncService.handleLocalListOnLogin()
                     } else {
-                        throw ListShopError.generalError
+                        return self.listService.retrieveMostRecentList()
+                    }
+                     */
+                    self.listService.retrieveMostRecentList().map {
+                        ($0, tagTree)
                     }
                 }
-                .done { tagTree in
-                    self.retrieveSyncedList(with: tagTree)
+                .done({ (shoppingList, tagTree) in
+                    self.goToListScreen(with: shoppingList, and: tagTree)
+                })
+                .done { [weak self] in
+                    let _ = try? self?.syncService.syncStatistics(connectionStatus: .connected)
                 }
                 .catch { error in
-                    print("Error: \(error) while syncing local list")
-                    let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
-                    self.onComplete(.failure(lse))
+                    if let lse = error as? ListShopError {
+                        if (lse.title == "POSTINGDATA") {
+                            // this is a merge list problem
+                            let lse = ListShopError.mergeError
+                            self.onComplete(.failure(lse))
+                        } else {
+                            // this is a sign-in / credentials problem
+                            let lse = ListShopError.signInError
+                            self.onComplete(.failure(lse))
+                        }
+
+                        print("Error signing in: \(lse.title) \(lse)")
+                    } else {
+                        let lse = ListShopError.signInError
+                        self.onComplete(.failure(lse))
+                    }
                 }
+
     }
 
-    private func retrieveSyncedList(with tagTree: TagTree) {
-        firstly {
-            try syncService.syncServerList(connectionStatus: connectionStatus)
-        }
-                .done { (shoppingList: ShoppingList) -> Void in
-                    self.goToListScreen(with: shoppingList, and: tagTree)
-                }
-                .catch { _ in
-                    self.getMostRecentList(with: tagTree)
-                }
-    }
-
-    private func getMostRecentList(with tagTree: TagTree) {
-        firstly {
-            listService.retrieveMostRecentList()
-        }
-                .done { (shoppingList: ShoppingList) -> Void in
-                    self.goToListScreen(with: shoppingList, and: tagTree)
-                }
-                .catch { error in
-                    print("Error: \(error) while syncing server list - most recent")
-                    let lse = ListShopError(type: .core, title: "CantSyncServerList", message: "Error while syncing server list")
-                    self.onComplete(.failure(lse))
-                }
-    }
-
-    private func goToListScreen(with shoppingList: ShoppingList, and tagTree: TagTree) {
-        let cStat = connectionStatus
-        let bgq = DispatchQueue.global(qos: .userInitiated)
+    private func goToListScreen(with shoppingList: ShoppingList, and tagTree: TagTree) -> () {
         firstly { () -> Promise<[ShoppingList]> in
             // make sure to finish syncing local data first before moving to local list
             try listService.retrieveListOfLists()
@@ -156,116 +122,10 @@ public class SystemGetLandingScreenUseCase: UseCase {
                 .done { listOfLists in
                     self.onComplete(.success((TransitionViewState.listScreen(shoppingList, listOfLists), tagTree)))
                 }
-                .done(on: bgq) { _ in
-                    // fire and forget statistics
-                    _ = try? self.syncService.syncStatistics(connectionStatus: cStat)
-                }
                 .catch { error in
                     print("Error: \(error) while syncing local list")
                     let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
                     self.onComplete(.failure(lse))
                 }
     }
-
-    private func destinationLocalList(connectionStatus: ListShopConnectionStatus) {
-        // sync local list
-
-        firstly { () -> Promise<TagTree> in
-            // make sure to finish syncing local data first before moving to local list
-            try syncService.syncLookupData(connectionStatus: connectionStatus)
-        }
-                .then { tagTree -> Promise<(TagTree, ShoppingList)> in
-                    self.listService.retrieveLocalList().map {
-                        (tagTree, $0)
-                    }
-                }
-                .done { (tagTree, shoppingList) in
-                    self.goToListScreen(with: shoppingList, and: tagTree)
-                }
-                .catch { error in
-                    print("Error: \(error) while syncing local list")
-                    let lse = ListShopError(type: .core, title: "CantSyncLocalList", message: "Error while syncing local list")
-                    self.onComplete(.failure(lse))
-                }
-    }
-
 }
-
-
-        firstly { () -> Promise<Void> in
-            // make sure to finish syncing local data first before moving to local list
-            try userService.authenticateUser()
-        }
-            .done { [weak self] in
-                self?.goToListOfListsScreen()
-        }
-            .catch { error in
-                print("Error: \(error) while syncing local list")
-                let lse = ListShopError(type: .core, title: "Can't get the lookup data", message: "Error while retrieving lookup data")
-                self.onComplete(.failure(lse))
-        }
-   private func goToListOfListsScreen() {
-        firstly { () -> Promise<[ShoppingList]> in
-            // make sure to finish syncing local data first before moving to local list
-            try listService.retrieveListOfLists()
-        }
-            .done { listOfLists in
-                self.onComplete(.success(TransitionViewState.listManagementScreen( listOfLists)))
-        }
-
-    }
-
-    public func authenticateUser() throws -> Promise<Void> {
-            if userSessionService.userSession.userToken == nil {
-                let lse = ListShopError(type: .core, title: "Authentication error",
-                        message: "Can't authenticate user without token")
-                throw lse
-            }
-            let deviceInfo = buildDeviceInfo()
-
-            let jsonEncoder = JSONEncoder()
-            let jsonData = try? jsonEncoder.encode(deviceInfo)
-
-            return firstly {
-                try listShopRemoteApi.authenticateUser(postData: jsonData ?? Data())
-            }
-                    .then { [self] () -> Promise<ApiUserProperties> in
-                        // get user properties
-                        try listShopRemoteApi.retrieveUserProperties()
-
-                    }
-                    .done { [self] userProperties in
-                        // transform properties into String:String dictionary
-                        var dictionary: [String: String] = [:]
-                        for property in userProperties.userProperties {
-                            dictionary[property.key] = property.value
-                        }
-                        // save properties in session
-                        userSessionService.setUserProperties(properties: dictionary)
-                    }
-        }
-   enum CodingKeys: String, CodingKey {
-        case osVersion = "os_version"
-        case clientType = "client_type"
-        case clientVersion = "client_version"
-        case deviceId = "device_id"
-        case name = "name"
-        case model = "model"
-        case buildNumber = "build_number"
-        case os = "os"
-
-            case noinfo
-            case connected
-            case notConnected
-
-            func description() -> String {
-                switch self {
-                case .noinfo:
-                    return "noinfo"
-                case .connected:
-                    return "connected"
-                case .notConnected:
-                    return "notConnected"
-
-                }
-            }

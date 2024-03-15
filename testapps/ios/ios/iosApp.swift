@@ -22,6 +22,11 @@ struct iosApp: App {
             "randomDeviceId"
         )
         */
+     //MM dont forget device id
+      /*
+                  if let identifier = device.identifierForVendor {
+                      deviceId = identifier.uuidString
+                  }*/
     let sdk = StartSDKKt.startSDK(analytics: IosAnalytics(), )
 
     
