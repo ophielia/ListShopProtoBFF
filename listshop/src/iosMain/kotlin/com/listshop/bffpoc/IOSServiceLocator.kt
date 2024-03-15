@@ -9,6 +9,7 @@ import com.listshop.bff.DB_NAME
 import com.listshop.bff.SETTINGS_KEY
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.services.UserSessionService
+import com.listshop.bff.ucp.DashboardUCP
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.NSUserDefaultsSettings
@@ -33,6 +34,15 @@ fun onboardingUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): On
         appInfo = appInfo
     )
     return locator.onboardingUCP
+}
+
+fun dashboardUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): DashboardUCP {
+    val locator = IOSServiceLocator(
+        NSUserDefaults(suiteName = SETTINGS_KEY),
+        analyticsHandle = analyticsHandle,
+        appInfo = appInfo
+    )
+    return locator.dashboardUCP
 }
 fun sessionServiceStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): UserSessionService {
     val locator = IOSServiceLocator(

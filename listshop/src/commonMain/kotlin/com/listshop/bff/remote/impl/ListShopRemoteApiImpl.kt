@@ -1,7 +1,8 @@
-package com.listshop.bff.remote
+package com.listshop.bff.remote.impl
 
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.services.UserSessionService
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine

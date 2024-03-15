@@ -1,8 +1,10 @@
-package com.listshop.bff.remote
+package com.listshop.bff.remote.impl
 
 import com.listshop.bff.data.remote.ApiDeviceInfo
 import com.listshop.bff.data.remote.ApiWrappedUser
 import com.listshop.bff.data.remote.PostUserLogin
+import com.listshop.bff.remote.ListShopRemoteApi
+import com.listshop.bff.remote.UserApi
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody

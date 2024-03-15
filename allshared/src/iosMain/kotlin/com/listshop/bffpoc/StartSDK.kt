@@ -9,6 +9,7 @@ fun startSDK(analytics: Analytics, appInfo : AppInfo): SDKHandle {
     return SDKHandle(
         tagUCP = tagUCPStartup(analyticsHandle, appInfo),
         onboardingUCP = onboardingUCPStartup(analyticsHandle, appInfo),
+        dashboardUCP = dashboardUCPStartup(analyticsHandle, appInfo),
         sessionService = sessionServiceStartup(analyticsHandle, appInfo),
         appAnalytics = analyticsHandle.appAnalytics
     )

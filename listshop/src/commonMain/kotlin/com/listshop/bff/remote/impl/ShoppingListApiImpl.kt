@@ -1,7 +1,9 @@
-package com.listshop.bff.remote
+package com.listshop.bff.remote.impl
 
 import com.listshop.bff.data.model.ShoppingList
 import com.listshop.bff.data.remote.ApiShoppingListEmbedded
+import com.listshop.bff.remote.ListShopRemoteApi
+import com.listshop.bff.remote.ShoppingListApi
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 

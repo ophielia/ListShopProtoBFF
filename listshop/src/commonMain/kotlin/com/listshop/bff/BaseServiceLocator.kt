@@ -7,13 +7,13 @@ import co.touchlab.kmmbridgekickstart.AppInfo
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.remote.ListShopRemoteApi
-import com.listshop.bff.remote.ListShopRemoteApiImpl
 import com.listshop.bff.remote.ShoppingListApi
-import com.listshop.bff.remote.ShoppingListApiImpl
 import com.listshop.bff.remote.TagApi
-import com.listshop.bff.remote.TagApiImpl
 import com.listshop.bff.remote.UserApi
-import com.listshop.bff.remote.UserApiImpl
+import com.listshop.bff.remote.impl.ListShopRemoteApiImpl
+import com.listshop.bff.remote.impl.ShoppingListApiImpl
+import com.listshop.bff.remote.impl.TagApiImpl
+import com.listshop.bff.remote.impl.UserApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
 import com.listshop.bff.repositories.SessionInfoRepository
 import com.listshop.bff.repositories.TagRepository
@@ -23,6 +23,7 @@ import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.services.impl.ListServiceImpl
 import com.listshop.bff.services.impl.UserServiceImpl
 import com.listshop.bff.services.impl.UserSessionServiceImpl
+import com.listshop.bff.ucp.DashboardUCP
 import com.listshop.bff.ucp.OnboardingUCP
 import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.Settings
@@ -48,6 +49,15 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         OnboardingUCP(
             sessionService = sessionService,
             listService = listService,  // remote repo
+            userService = userService,
+            listShopAnalytics = listShopAnalytics
+        )
+    }
+
+    override val dashboardUCP: DashboardUCP by lazy {
+        DashboardUCP(
+            sessionService = sessionService,
+            listService = listService,
             userService = userService,
             listShopAnalytics = listShopAnalytics
         )
