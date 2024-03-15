@@ -1,17 +1,18 @@
 package com.listshop.bff.usecases
 
 import com.listshop.bff.data.bff.BFFResult
-import com.listshop.bff.data.state.DashboardViewState
+import com.listshop.bff.data.state.OnboardingViewState
 import com.listshop.bff.data.state.TransitionViewState
+import com.listshop.bff.services.UserService
 import com.listshop.bff.services.UserSessionService
 
-class NavigateToDashboardUseCase(
-    private val sessionService: UserSessionService,
+class LogoutUseCase(
+    private val userService: UserService,
 ) {
     suspend fun process(): BFFResult<TransitionViewState> {
-        val goal = TransitionViewState.Dashboard(DashboardViewState.mainDashboard)
-        sessionService.setUserLastSeenToNow()
+        userService.logoutUser()
 
+        val goal = TransitionViewState.Onboarding(OnboardingViewState.Choose)
         return BFFResult.success(goal)
     }
 

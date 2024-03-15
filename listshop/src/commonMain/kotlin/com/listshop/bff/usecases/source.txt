@@ -1,0 +1,54 @@
+    case dashboard(DashboardViewState)
+
+    public func start() {
+
+
+        // call signIn in UserService, which returns a token
+        firstly(execute: {
+            try userService.logoutUser()
+        })
+                .done({ (_) in
+                    self.onComplete(.success(TransitionViewState.onboarding(.choose)))
+                }).catch { _ in
+                    self.onComplete(.success(TransitionViewState.onboarding(.choose)))
+        }
+
+    }
+
+        public func logoutUser() throws -> Promise<Void> {
+            guard userSessionService.userSession.userToken.exists else {
+                return Promise.value(())
+            }
+            return firstly(execute: {
+                try listShopRemoteApi.logoutUser()
+            })
+                    .done({
+                        // set token to null, list token to null
+                        self.userSessionService.setUserToken(token: nil)
+                        self.userSessionService.setServerListId(list: 0)
+                        self.userSessionService.setUserProperties(properties: [:])
+                    })
+
+        }
+
+            public func logoutUser() throws -> Promise<Void> {
+                // put together url
+                guard let url = URL(string: remoteSession.baseUrlString + "/auth/logout") else {
+                    os_log("Cant convert string to url.", log: Log.network, type: .info)
+                    let lse = ListShopError(type: .network, title: "CANTMAKEURL", message: "Can't construct url")
+                    return Promise(error: lse)
+                }
+                // put together request
+                var request = remoteSession.request(for: url)
+                request.httpMethod = "GET"
+
+                return firstly {
+                    performSimpleRequest(urlRequest: request)
+                }
+                        .done { statusCode in
+                            if statusCode < 200 || statusCode > 299 {
+                                let lse = ListShopError(type: .network, title: "CANTMAKEPOST", message: "Bad status after post to \(url)")
+                                throw lse
+                            }
+                        }
+            }

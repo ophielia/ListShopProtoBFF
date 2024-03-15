@@ -27,7 +27,7 @@ class UserSessionServiceImpl internal constructor(
         return appInfo
     }
 
-    override fun setUserToken(token: String) {
+    override fun setUserToken(token: String?) {
         val userInfo = getUserInfo()
         userInfo.userToken = token
         updateUserInfo(userInfo)

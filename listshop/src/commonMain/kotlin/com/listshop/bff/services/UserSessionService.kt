@@ -7,7 +7,7 @@ interface UserSessionService {
     fun currentSession(): UserSession
     fun currentAppInfo(): AppInfo
 
-    fun setUserToken(token: String)
+    fun setUserToken(token: String?)
 
     fun setUserName(name: String)
 

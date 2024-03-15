@@ -6,6 +6,7 @@ import com.listshop.bff.data.remote.PostUserLogin
 import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.remote.UserApi
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -39,6 +40,14 @@ internal class UserApiImpl(
 
         //MM nfl handle signin failure
         return response.user.token ?: "token"
+    }
+
+    override suspend fun logoutUser() {
+
+        //val response: HttpResponse = remoteApi.client(remoteApi.token())
+        remoteApi.client(remoteApi.token()).get("/auth/logout")
+
+        //MM nfl handle  failure
     }
 
 

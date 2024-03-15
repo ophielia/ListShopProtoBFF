@@ -17,6 +17,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             export(project(":analytics"))
+            binaryOption("bundleId", "com.listshop.proto.bff")
             isStatic = true
         }
     }
@@ -29,6 +30,8 @@ kotlin {
             }
         }
     }
+
+    task("testClasses")
 }
 
 addGithubPackagesRepository()

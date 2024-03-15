@@ -7,5 +7,6 @@ internal interface UserApi {
 
     suspend fun authenticateUser(postDeviceInfo: ApiDeviceInfo)
     suspend fun signInUser(postLoginUser: PostUserLogin): String
+    suspend fun logoutUser()
 
 }

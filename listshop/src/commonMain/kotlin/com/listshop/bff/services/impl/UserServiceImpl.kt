@@ -9,7 +9,8 @@ import kotlin.math.min
 
 class UserServiceImpl internal constructor(
     private val remoteApi: UserApi,
-    private val sessionService: UserSessionService
+    private val sessionService: UserSessionService,
+    private val userService: UserService
 ) : UserService {
     override suspend fun authenticateUser() {
         if (sessionService.currentSession().userToken == null) {
@@ -18,6 +19,19 @@ class UserServiceImpl internal constructor(
         val postDeviceInfo = buildDeviceInfo()
         remoteApi.authenticateUser(postDeviceInfo)
         //MM nfl - do properties here
+    }
+
+    override suspend fun logoutUser() {
+        if (sessionService.currentSession().userToken == null) {
+            return
+        }
+
+        // logout on the server
+        remoteApi.logoutUser()
+
+        // clear session
+        sessionService.setUserToken(null)
+        //MM nfl also clear list (server list) and user properties
     }
 
     override suspend fun signInUser(userName: String, password: String) {
