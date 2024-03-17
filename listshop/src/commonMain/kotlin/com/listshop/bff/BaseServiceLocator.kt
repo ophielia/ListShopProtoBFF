@@ -92,8 +92,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     private val userService: UserService by lazy {
         UserServiceImpl(
             remoteApi = userApi,
-            sessionService = sessionService,
-            userService = userService
+            sessionService = sessionService
         )
     }
 

@@ -9,8 +9,7 @@ import kotlin.math.min
 
 class UserServiceImpl internal constructor(
     private val remoteApi: UserApi,
-    private val sessionService: UserSessionService,
-    private val userService: UserService
+    private val sessionService: UserSessionService
 ) : UserService {
     override suspend fun authenticateUser() {
         if (sessionService.currentSession().userToken == null) {

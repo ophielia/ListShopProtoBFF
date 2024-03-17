@@ -4,7 +4,6 @@ import com.listshop.bff.data.bff.BFFResult
 import com.listshop.bff.data.state.OnboardingViewState
 import com.listshop.bff.data.state.TransitionViewState
 import com.listshop.bff.services.UserService
-import com.listshop.bff.services.UserSessionService
 
 class LogoutUseCase(
     private val userService: UserService,

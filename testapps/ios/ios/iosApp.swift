@@ -10,31 +10,29 @@ import allshared
 
 @main
 struct iosApp: App {
-// insert app info here....9
-/*
-        val appInfo = AppInfo("dummyUrl",
-            "name",
-            "model",
-            "os",
-            "osVersion",
-            "1.1.1",
-            "111",
-            "randomDeviceId"
-        )
-        */
-     //MM dont forget device id
-      /*
-                  if let identifier = device.identifierForVendor {
-                      deviceId = identifier.uuidString
-                  }*/
-    let sdk = StartSDKKt.startSDK(analytics: IosAnalytics(), )
 
+    
+    let sdk = StartSDKKt.startSDK(analytics: IosAnalytics(), appInfo: AppInfo(baseUrl: "http://localhost:8182",
+                                                                              name: "name",
+                                                                              model: "model",
+                                                                              os: "os",
+                                                                              osVersion: "osVersion",
+                                                                              clientVersion: "1.1.1",
+                                                                              buildNumber: "111",
+                                                                              deviceId: "randomDeviceId"
+                                                        )
+                                                         )
+    
+    
+
+    
     
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: .init(sdk: sdk))
         }
     }
+
 }
 
 class IosAnalytics: Analytics {

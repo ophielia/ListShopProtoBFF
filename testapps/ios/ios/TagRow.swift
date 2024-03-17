@@ -10,7 +10,7 @@ import SwiftUI
 import allshared
 
 struct TagRow: View {
-    var tag:  BreedsTag
+    var tag:  ListshopTag
 
     var body: some View {
         HStack() {
