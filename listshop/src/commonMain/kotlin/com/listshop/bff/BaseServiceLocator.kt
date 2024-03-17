@@ -92,7 +92,8 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     private val userService: UserService by lazy {
         UserServiceImpl(
             remoteApi = userApi,
-            sessionService = sessionService
+            sessionService = sessionService,
+            listShopAnalytics = listShopAnalytics
         )
     }
 
@@ -139,7 +140,8 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
 
     private val shoppingListApi: ShoppingListApi by lazy {
         ShoppingListApiImpl(
-            remoteApi = listShopRemoteApi
+            remoteApi = listShopRemoteApi,
+            listShopAnalytics = listShopAnalytics
         )
     }
 

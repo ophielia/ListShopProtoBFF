@@ -1,5 +1,6 @@
 package com.listshop.bff.services.impl
 
+import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.data.remote.ApiDeviceInfo
 import com.listshop.bff.data.remote.PostUserLogin
 import com.listshop.bff.remote.UserApi
@@ -9,7 +10,8 @@ import kotlin.math.min
 
 class UserServiceImpl internal constructor(
     private val remoteApi: UserApi,
-    private val sessionService: UserSessionService
+    private val sessionService: UserSessionService,
+    private val listShopAnalytics : ListShopAnalytics
 ) : UserService {
     override suspend fun authenticateUser() {
         if (sessionService.currentSession().userToken == null) {
@@ -37,9 +39,9 @@ class UserServiceImpl internal constructor(
         val postLoginUser = prepareSignInObject(userName, password)
 
         val token = remoteApi.signInUser(postLoginUser)
-
+listShopAnalytics.debug("the token is : " + token)
         // save results
-        sessionService.setuserLastSignedInToNow()
+        sessionService.setUserLastSignedInToNow()
         sessionService.setUserToken(token)
         sessionService.setUserName(userName)
     }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ApiShoppingList(
     @SerialName("list_id")
-    val externalId: String?,
+    val externalId: Int?,
     @SerialName("created")
     val created: String?,
     @SerialName("updated")
@@ -14,7 +14,7 @@ data class ApiShoppingList(
     @SerialName("item_count")
     val itemCount: Int?,
     @SerialName("user_id")
-    val userId: String?,
+    val userId: Int?,
     @SerialName("layout_id")
     val layoutId: String?,
     @SerialName("name")

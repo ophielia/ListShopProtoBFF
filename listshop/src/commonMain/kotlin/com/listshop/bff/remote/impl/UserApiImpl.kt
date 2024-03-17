@@ -33,7 +33,7 @@ internal class UserApiImpl(
 
         //val response: HttpResponse = remoteApi.client(remoteApi.token())
         val response: ApiWrappedUser =remoteApi.client(remoteApi.token())
-            .post("/auth/authenticate") {
+            .post("/auth") {
                 contentType(ContentType.Application.Json)
                 setBody(postLoginUser)
         }.body()

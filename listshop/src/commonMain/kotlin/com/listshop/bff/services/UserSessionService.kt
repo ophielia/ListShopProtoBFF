@@ -13,7 +13,7 @@ interface UserSessionService {
 
     fun setUserLastSeenToNow()
 
-    fun setuserLastSignedInToNow()
+    fun setUserLastSignedInToNow()
 
 
 }

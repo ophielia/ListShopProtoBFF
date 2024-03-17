@@ -12,6 +12,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.accept
 import io.ktor.client.request.headers
 import io.ktor.http.ContentType
@@ -28,7 +29,7 @@ internal class ListShopRemoteApiImpl(
     private val listShopAnalytics: ListShopAnalytics
 ) : ListShopRemoteApi {
 
-    private var _currentClientToken: String? = null
+    private var _currentClientToken: String? = "init"
 
     private var  _client = HttpClient(engine) {
         expectSuccess = true
@@ -108,12 +109,9 @@ internal class ListShopRemoteApiImpl(
                 accept(ContentType.Application.Json)
                 headers {
                     append("Accept-Version", "v1")
-                    append(HttpHeaders.Authorization, token)
+                    append(HttpHeaders.Authorization, "Bearer " + token)
                 }
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = baseUrl
-                }
+                url(baseUrl)
             }
         }
     }
@@ -142,16 +140,16 @@ internal class ListShopRemoteApiImpl(
                 requestTimeoutMillis = timeout
                 socketTimeoutMillis = timeout
             }
+            install(Logging) {
+                logger = Logger.SIMPLE
+                level = LogLevel.ALL
+            }
             //Default Request Setting
             defaultRequest {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
 
-                url {
-                    protocol = URLProtocol.HTTP
-                    host = baseUrl
-
-                }
+                url(baseUrl)
             }
         }
 

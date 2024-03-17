@@ -20,7 +20,7 @@ data class ShoppingList(
     companion object Factory {
         fun create(apiValue: ApiShoppingList): ShoppingList {
             return ShoppingList(
-                apiValue.externalId,
+                apiValue.externalId.toString(),
                 apiValue.name,
                 apiValue.created,
                 apiValue.updated,

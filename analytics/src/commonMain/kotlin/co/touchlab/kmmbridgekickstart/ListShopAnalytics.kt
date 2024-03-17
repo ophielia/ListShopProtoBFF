@@ -45,4 +45,8 @@ class ListShopAnalytics internal constructor() {
     fun databaseCleared() {
         sendEvent("tagDatabaseCleared")
     }
+
+    fun debug(text: String) {
+        sendEvent(text)
+    }
 }

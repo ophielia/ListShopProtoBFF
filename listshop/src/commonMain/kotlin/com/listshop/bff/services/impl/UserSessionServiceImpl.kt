@@ -49,7 +49,7 @@ class UserSessionServiceImpl internal constructor(
         refreshUserSession()
     }
 
-    override fun setuserLastSignedInToNow() {
+    override fun setUserLastSignedInToNow() {
         val userInfo = getUserInfo()
         val now = Clock.System.now()
         userInfo.userLastSignedIn = now.toString()
