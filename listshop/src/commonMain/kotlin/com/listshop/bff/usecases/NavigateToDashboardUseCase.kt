@@ -8,7 +8,7 @@ import com.listshop.bff.services.UserSessionService
 class NavigateToDashboardUseCase(
     private val sessionService: UserSessionService,
 ) {
-    suspend fun process(): BFFResult<TransitionViewState> {
+    fun process(): BFFResult<TransitionViewState> {
         val goal = TransitionViewState.Dashboard(DashboardViewState.mainDashboard)
         sessionService.setUserLastSeenToNow()
 

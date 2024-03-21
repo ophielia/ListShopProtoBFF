@@ -28,7 +28,11 @@ internal fun onboardingUCPStartup(context: Context, analyticsHandle: AnalyticsHa
     return locator.onboardingUCP
 }
 
-internal fun dashboardUCPStartup(context: Context, analyticsHandle: AnalyticsHandle, appInfo: AppInfo): DashboardUCP {
+internal fun dashboardUCPStartup(
+    context: Context,
+    analyticsHandle: AnalyticsHandle,
+    appInfo: AppInfo
+): DashboardUCP {
     val locator = AndroidServiceLocator(context, analyticsHandle, appInfo)
     return locator.dashboardUCP
 }

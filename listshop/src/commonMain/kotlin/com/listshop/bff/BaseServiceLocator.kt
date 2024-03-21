@@ -57,7 +57,6 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     override val dashboardUCP: DashboardUCP by lazy {
         DashboardUCP(
             sessionService = sessionService,
-            listService = listService,
             userService = userService,
             listShopAnalytics = listShopAnalytics
         )

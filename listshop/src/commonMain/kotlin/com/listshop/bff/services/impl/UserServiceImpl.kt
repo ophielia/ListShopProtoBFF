@@ -61,8 +61,8 @@ listShopAnalytics.debug("the token is : " + token)
     }
 
     private fun prepareSignInObject(userName: String, password: String): PostUserLogin {
-        val cleanedName = cleanStringForServer(userName, RemoteConstants.normalStringLength)
-        val cleanedPassword = cleanStringForServer(password, RemoteConstants.normalStringLength)
+        val cleanedName = cleanStringForServer(userName, RemoteConstants.NORMAL_STRING_LENGTH)
+        val cleanedPassword = cleanStringForServer(password, RemoteConstants.NORMAL_STRING_LENGTH)
         val deviceInfo = buildDeviceInfo()
         return PostUserLogin(cleanedName, cleanedPassword, deviceInfo)
     }
@@ -77,6 +77,6 @@ listShopAnalytics.debug("the token is : " + token)
 
 class RemoteConstants {
     companion object {
-        const val normalStringLength = 300
+        const val NORMAL_STRING_LENGTH = 300
     }
 }

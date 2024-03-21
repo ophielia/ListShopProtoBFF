@@ -51,7 +51,9 @@ extension ContentView {
             self.onboardingUCP = sdk.onboardingUCP
             self.dashboardUCP = sdk.dashboardUCP
             self.loadTags(forceReload: false)
-            self.callLoginUseCase()
+            //self.callLoginUseCase()
+            // self.callLogoutUsecase()
+            self.callGetLaunchScreenUseCase()
             print("STARTING OUT!!")
         }
         
@@ -104,7 +106,13 @@ extension ContentView {
                         switch onEnum(of: val) {
                         case .onboarding(let screen):
                             print("the result is \(screen)")
+                            print("the result is \(type(of: screen))")
+                        case .listManagementScreen(let screen):
+                            print("the result is \(screen)")
+                            print("THIS IS WHAT WE NEED \(type(of: screen))")
+                            print("THIS IS ALSO WHAT WE NEED \(type(of: screen.shoppingLists))")
                             
+                         
                         default:
                             print("dont know what kind of result this is")
                         }
