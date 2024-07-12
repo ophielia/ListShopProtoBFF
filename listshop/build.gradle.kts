@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("app.cash.sqldelight")
     id("com.android.library")
+    id("dev.mokkery")
     `maven-publish`
 }
 
@@ -28,6 +29,20 @@ kotlin {
                 implementation(libs.sqlDelight.coroutinesExt)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+                //implementation(libs.resources.test)
+                implementation(libs.coroutines.test)
+                implementation(libs.turbine)
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.ktor.client.mock)
+            }
+        }
+
+
+
         val androidMain by getting {
             dependencies {
                 implementation(libs.sqlDelight.android)

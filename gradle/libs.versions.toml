@@ -11,6 +11,7 @@ android-gradle-plugin = "8.2.0"
 coroutines = "1.7.3"
 kotlinx-datetime = "0.4.1"
 ktor = "2.3.5"
+mokkery = "1.9.20-1.3.0"
 
 stately = "2.0.5"
 kermit = "2.0.1"
@@ -29,12 +30,17 @@ androidx-activity-compose = "1.8.0"
 android-desugaring = "2.0.4"
 koin = "3.5.0"
 
+turbine = "1.1.0"
+kotest = "5.9.1"
+
+
 sharedlib = "0.4.+"
 
 [libraries]
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "composeCompiler" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 kotlinx-dateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
@@ -44,6 +50,7 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-okHttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 
@@ -51,6 +58,13 @@ sqlDelight-android = { module = "app.cash.sqldelight:android-driver", version.re
 sqlDelight-coroutinesExt = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 sqlDelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
 sqlDelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
+
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+sqldelight-jvm = { module = "app.cash.sqldelight:runtime-jvm", version.ref = "sqlDelight" }
+sqldelight-jdbc-driver = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqlDelight" }
+sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqlDelight" }
 
 touchlab-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 touchlab-stately-common = { module = "co.touchlab:stately-common", version.ref = "stately" }

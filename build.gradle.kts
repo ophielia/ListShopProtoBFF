@@ -5,6 +5,7 @@ plugins {
     id("co.touchlab.kmmbridge") version libs.versions.kmmBridge.get() apply false
     id("app.cash.sqldelight") version libs.versions.sqlDelight.get() apply false
     id("co.touchlab.skie") version libs.versions.skie.get() apply false
+    id("dev.mokkery") version libs.versions.mokkery.get() apply false
 }
 
 allprojects {
