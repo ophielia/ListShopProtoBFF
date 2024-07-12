@@ -18,7 +18,7 @@ internal class TagApiImpl(
 
         return result.embeddedList.tagLookupResourceList
             .map { et -> et.embeddedTag }
-            .map { at -> Tag.create(at) }
+            .map { at -> Tag.create(apiValue = at) }
     }
 
 
