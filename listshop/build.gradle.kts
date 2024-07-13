@@ -32,9 +32,32 @@ kotlin {
                 implementation(libs.sqlDelight.coroutinesExt)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+                //implementation(libs.resources.test)
+                //implementation(libs.coroutines.test)
+                //implementation(libs.turbine)
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.kotest.assertions.core)
+                //implementation(libs.ktor.client.mock)
+            }
+        }
 
-
-
+        val androidTest = sourceSets.getByName("androidUnitTest") {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation(libs.junit)
+                //implementation(libs.sqldelight.jvm)
+                //implementation(libs.coroutines.test)
+                //implementation(libs.turbine)
+                //implementation(libs.kotest.framework.engine)
+                //implementation(libs.ktor.client.mock)
+                //implementation(libs.sqldelight.jdbc.driver)
+                //implementation(libs.sqldelight.sqlite.driver)
+            }
+        }
 
         val androidMain by getting {
             dependencies {

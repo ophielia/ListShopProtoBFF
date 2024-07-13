@@ -64,6 +64,7 @@ sqlDelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 sqldelight-jvm = { module = "app.cash.sqldelight:runtime-jvm", version.ref = "sqlDelight" }
 sqldelight-jdbc-driver = { module = "app.cash.sqldelight:jdbc-driver", version.ref = "sqlDelight" }
