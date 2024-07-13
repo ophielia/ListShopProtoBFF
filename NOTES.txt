@@ -1,0 +1,22 @@
+abandoned koin, since it was too complicated.
+found a somewhat hacky way to do use case tests with a locator
+found an issue with the host and base url.
+
+info
+https://medium.com/@santimattius/kmp-for-mobile-native-developers-part-5-testing-46e150d26750
+https://akjaw.com/kotlin-multiplatform-testing-sqldelight-integration-ios-android/
+==> I wish I'd seen this when I was working.... https://ilushakr.medium.com/two-platform-one-ktor-client-c03ee2f8139d
+
+NextUp  -
+done - switch android studio to jellyfish
+done - get unit tests to run for common
+fix url issue - https://stackoverflow.com/questions/45253789/unexpected-host-with-okhttp
+add mock http client
+add possibility to run scripts at beginning of tests
+    https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
+go ahead and make happy path
+tackle error handling
+go back for a couple not so happy paths.
+
+
+

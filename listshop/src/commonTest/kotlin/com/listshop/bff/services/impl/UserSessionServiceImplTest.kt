@@ -15,12 +15,17 @@ import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
  */
 import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.bff.data.model.UserInfo
 import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.db.UserInfoEntity
 import com.listshop.bff.repositories.SessionInfoRepository
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.matcher.capture.Capture
+import dev.mokkery.matcher.capture.capture
+import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -65,6 +70,20 @@ class UserSessionServiceImplTest {
         assertEquals(userSession.sessionState, UserSessionState.User)
         assertEquals(userSession.appVersion,"clientVersion")
         assertEquals(userSession.baseUrl,"baseUrl")
+    }
+
+
+    @Test
+    fun `when i call setUserToken the token is sent to save`() = runTest {
+        var userInfo =  dummyUserInfoEntity()
+        every { repository.getUserInfo() } returns userInfo
+
+        val savedUserInfo = Capture.slot<UserInfo>()
+        every {repository.updateUserInfo(capture(savedUserInfo))} returns Unit
+
+        service?.setUserToken("BRAND NEW TOKEN")
+        assertNotNull(savedUserInfo.get())
+        assertEquals("BRAND NEW TOKEN", savedUserInfo.get().userToken,)
     }
 
     private fun dummyUserInfoEntity(): UserInfoEntity? {

@@ -37,7 +37,7 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 //implementation(libs.resources.test)
-                //implementation(libs.coroutines.test)
+                implementation(libs.coroutines.test)
                 //implementation(libs.turbine)
                 implementation(libs.kotest.framework.engine)
                 implementation(libs.kotest.assertions.core)
