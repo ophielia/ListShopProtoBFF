@@ -5,6 +5,7 @@ import co.touchlab.kmmbridgekickstart.AppInfo
 interface UserSessionService {
 
     fun currentSession(): UserSession
+
     fun currentAppInfo(): AppInfo
 
     fun setUserToken(token: String?)

@@ -17,6 +17,7 @@ import com.listshop.bff.remote.impl.UserApiImpl
 import com.listshop.bff.repositories.ListShopDatabase
 import com.listshop.bff.repositories.SessionInfoRepository
 import com.listshop.bff.repositories.TagRepository
+import com.listshop.bff.repositories.impl.SessionInfoRepositoryImpl
 import com.listshop.bff.services.ListService
 import com.listshop.bff.services.UserService
 import com.listshop.bff.services.UserSessionService
@@ -36,6 +37,9 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     private val appInfo: AppInfo) :
     ServiceLocator {
 
+    protected abstract val sqlDriver: SqlDriver
+    protected abstract val clientEngine: HttpClientEngine
+    protected abstract val settings: Settings  //MM not sure this is needed
 
     override val tagUCP: TagUCP by lazy {
         TagUCP(
@@ -103,7 +107,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     }
 
     private val sessionInfoRepository: SessionInfoRepository by lazy {
-        SessionInfoRepository(
+        SessionInfoRepositoryImpl(
             listShopDatabase = listShopDatabase
         )
     }
@@ -144,7 +148,5 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         )
     }
 
-    protected abstract val sqlDriver: SqlDriver
-    protected abstract val settings: Settings
-    protected abstract val clientEngine: HttpClientEngine
+
 }

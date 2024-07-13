@@ -13,12 +13,13 @@ internal class TagApiImpl(
 
     override suspend fun getAllTags(): List<Tag> {
         val token = remoteApi.token()
+        val urlString = remoteApi.buildPath("/tag/user")
         val result: ApiTagLookupEmbedded =
-            remoteApi.client(token).get("/tag/user").body()
+            remoteApi.client(token).get(urlString).body()
 
         return result.embeddedList.tagLookupResourceList
             .map { et -> et.embeddedTag }
-            .map { at -> Tag.create(apiValue = at) }
+            .map { at -> Tag.create(at) }
     }
 
 

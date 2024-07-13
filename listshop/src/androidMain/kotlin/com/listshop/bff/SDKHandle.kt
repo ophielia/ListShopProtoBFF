@@ -1,4 +1,4 @@
-package com.listshop.bffpoc
+package com.listshop.bff
 
 import co.touchlab.kmmbridgekickstart.AppAnalytics
 import com.listshop.bff.services.UserSessionService

@@ -32,6 +32,7 @@ class UserSessionServiceImpl internal constructor(
         userInfo.userToken = token
         updateUserInfo(userInfo)
         refreshUserSession()
+
     }
 
     override fun setUserName(name: String) {
@@ -57,8 +58,9 @@ class UserSessionServiceImpl internal constructor(
         refreshUserSession()
     }
 
-    private fun updateUserInfo(userInfo: UserInfo) {
+    private fun updateUserInfo(userInfo: UserInfo) : UserInfo{
         sessionRepo.updateUserInfo(userInfo)
+        return getUserInfo()
     }
 
     private fun getUserInfo(): UserInfo {

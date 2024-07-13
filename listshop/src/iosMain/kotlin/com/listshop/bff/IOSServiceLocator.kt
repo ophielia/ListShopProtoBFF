@@ -1,12 +1,9 @@
-package com.listshop.bffpoc
+package com.listshop.bff
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import co.touchlab.kmmbridgekickstart.AnalyticsHandle
 import co.touchlab.kmmbridgekickstart.AppInfo
-import com.listshop.bff.BaseServiceLocator
-import com.listshop.bff.DB_NAME
-import com.listshop.bff.SETTINGS_KEY
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.DashboardUCP

@@ -3,7 +3,9 @@ package com.listshop.bff.remote.impl
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
 import com.listshop.bff.remote.ListShopRemoteApi
+import com.listshop.bff.remote.ListShopUrl
 import com.listshop.bff.services.UserSessionService
+import com.listshop.bff.tools.StringUtils
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
@@ -30,6 +32,8 @@ internal class ListShopRemoteApiImpl(
 ) : ListShopRemoteApi {
 
     private var _currentClientToken: String? = "init"
+
+    private var _listshopUrl : ListShopUrl = StringUtils.buildUrl(sessionService.currentSession().baseUrl)
 
     private var  _client = HttpClient(engine) {
         expectSuccess = true
@@ -111,7 +115,10 @@ internal class ListShopRemoteApiImpl(
                     append("Accept-Version", "v1")
                     append(HttpHeaders.Authorization, "Bearer " + token)
                 }
-                url(baseUrl)
+                url {
+                    protocol = _listshopUrl.schemeToProtocol()
+                    host = _listshopUrl.host
+                }
             }
         }
     }
@@ -148,8 +155,10 @@ internal class ListShopRemoteApiImpl(
             defaultRequest {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
-
-                url(baseUrl)
+                url {
+                    protocol = _listshopUrl.schemeToProtocol()
+                    host = _listshopUrl.host
+                }
             }
         }
 
@@ -157,6 +166,10 @@ internal class ListShopRemoteApiImpl(
 
     override fun token(): String? {
         return sessionService.currentSession().userToken
+    }
+
+    override fun buildPath(path: String): String {
+            return _listshopUrl.pathSegments + path
     }
 
 

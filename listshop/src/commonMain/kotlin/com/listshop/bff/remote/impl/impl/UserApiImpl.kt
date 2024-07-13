@@ -31,9 +31,9 @@ internal class UserApiImpl(
     }
     override suspend fun signInUser(postLoginUser: PostUserLogin): String {
 
-        //val response: HttpResponse = remoteApi.client(remoteApi.token())
+        val urlString = remoteApi.buildPath("/auth")
         val response: ApiWrappedUser =remoteApi.client(remoteApi.token())
-            .post("/auth") {
+            .post(urlString) {
                 contentType(ContentType.Application.Json)
                 setBody(postLoginUser)
         }.body()
@@ -44,8 +44,8 @@ internal class UserApiImpl(
 
     override suspend fun logoutUser() {
 
-        //val response: HttpResponse = remoteApi.client(remoteApi.token())
-        remoteApi.client(remoteApi.token()).get("/auth/logout")
+        val urlString = remoteApi.buildPath("/auth/logout")
+        remoteApi.client(remoteApi.token()).get(urlString)
 
         //MM nfl handle  failure
     }

@@ -7,7 +7,7 @@ import android.util.Log
 import co.touchlab.kmmbridgekickstart.Analytics
 import co.touchlab.kmmbridgekickstart.AppInfo
 import com.listshop.bff.ucp.TagUCP
-import com.listshop.bffpoc.startSDK
+import com.listshop.bff.startSDK
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 

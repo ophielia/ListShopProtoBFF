@@ -15,9 +15,10 @@ internal class ShoppingListApiImpl(
 
     override suspend fun getAllShoppingLists(): List<ShoppingList> {
         val token = remoteApi.token()
+        val urlString = remoteApi.buildPath("/shoppinglist")
         listShopAnalytics.debug("getting lists, the token is: " + token)
         val result: ApiShoppingListEmbedded =
-            remoteApi.client(token).get("/shoppinglist").body()
+            remoteApi.client(token).get(urlString).body()
 
         return result.embeddedList.shoppingListResourceList
             .map { el -> el.embeddedList}

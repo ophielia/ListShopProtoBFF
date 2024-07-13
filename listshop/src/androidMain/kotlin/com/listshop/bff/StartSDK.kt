@@ -1,4 +1,4 @@
-package com.listshop.bffpoc
+package com.listshop.bff
 
 import android.content.Context
 import co.touchlab.kmmbridgekickstart.Analytics
