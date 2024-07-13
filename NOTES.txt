@@ -32,6 +32,8 @@ add possibility to run scripts at beginning of tests
 go ahead and make happy path
 tackle error handling
 go back for a couple not so happy paths.
+also - clean out unused dependencies in libs.
+
 
 https://blog.ippon.fr/2021/11/05/mockwebserver/
  @NonNull
