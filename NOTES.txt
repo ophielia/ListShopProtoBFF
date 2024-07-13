@@ -10,13 +10,46 @@ https://akjaw.com/kotlin-multiplatform-testing-sqldelight-integration-ios-androi
 NextUp  -
 done - switch android studio to jellyfish
 done - get unit tests to run for common
-fix url issue - https://stackoverflow.com/questions/45253789/unexpected-host-with-okhttp
-add mock http client
+done - fix url issue - https://stackoverflow.com/questions/45253789/unexpected-host-with-okhttp
+done -add mock http client (well, mockwebserver)
+make mockwebserver easier to work with
+    response with headers method taking body as argument
+    match requests on - path and body
+    initialize dispatcher with path to label list
+        label corresponds to json input and output
+        ex:
+        path - auth; label - authSuccess
+        json - authSuccessInput.json, authSuccessOutput.json
+
+        path - auth; label - authFail
+        json - authSuccessInput.json, authSuccessOutput.json
+
+        The output will need to be a small wrapper which holds a status code and the body
+
 add possibility to run scripts at beginning of tests
     https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
+
 go ahead and make happy path
 tackle error handling
 go back for a couple not so happy paths.
 
+https://blog.ippon.fr/2021/11/05/mockwebserver/
+ @NonNull
+ @Override
+ public MockResponse dispatch(@NonNull RecordedRequest request) {
+   try {
+     if ("/sites/data".equals(request.getPath())) {
+       JsonNode requestBody = mapper.readTree(request.getBody().readString(StandardCharsets.UTF_8));
+       JsonNode expectedInput = mapper.readTree(readFile("src/test/resources/controller/input-uuids-sites.json"));
+       if (requestBody.equals(expectedInput)) {
+         return createResponseWithJsonContent(readFile("src/test/resources/controller/output-sites-data.json"));
+       }
+     }
+   } catch (IOException ioe) {
+     return new MockResponse().setResponseCode(500);
+   }
+
+   return new MockResponse().setResponseCode(404);
+ }
 
 
