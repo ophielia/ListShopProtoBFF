@@ -41,6 +41,7 @@ kotlin {
                 //implementation(libs.turbine)
                 implementation(libs.kotest.framework.engine)
                 implementation(libs.kotest.assertions.core)
+                implementation("com.goncalossilva:resources:0.4.0")
                 //implementation(libs.ktor.client.mock)
             }
         }

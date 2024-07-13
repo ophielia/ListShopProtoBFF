@@ -7,6 +7,7 @@ plugins {
     id("co.touchlab.skie") version libs.versions.skie.get() apply false
     id("dev.mokkery") version libs.versions.mokkery.get() apply false
         id("com.autonomousapps.dependency-analysis") version "1.30.0"
+    id("com.goncalossilva.resources") version "0.4.0"
 }
 
 allprojects {

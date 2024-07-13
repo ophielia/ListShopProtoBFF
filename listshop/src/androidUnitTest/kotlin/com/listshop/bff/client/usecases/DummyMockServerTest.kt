@@ -4,6 +4,7 @@ import co.touchlab.kmmbridgekickstart.Analytics
 import co.touchlab.kmmbridgekickstart.AnalyticsHandle
 import co.touchlab.kmmbridgekickstart.AppInfo
 import co.touchlab.kmmbridgekickstart.initAnalytics
+import com.goncalossilva.resources.Resource
 import com.listshop.bff.SDKHandle
 import com.listshop.bff.TestServiceLocator
 import com.listshop.bff.dashboardUCPStartup
@@ -13,6 +14,8 @@ import com.listshop.bff.tagUCPStartup
 import com.listshop.bff.ucp.OnboardingUCP
 import com.russhwolf.settings.Settings
 import dev.mokkery.mock
+
+
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -93,6 +96,11 @@ class DummyMockServerTest {
 
     @BeforeTest
     fun setUp() {
+          val testResource = Resource("src/commonTest/resources/test.json")
+         println("RESOURCE IS: "+ testResource.readText())
+
+
+
         val mockWebServer = MockWebServer()
         mockWebServer.start()
         var baseUrl = mockWebServer.url("").toString()
