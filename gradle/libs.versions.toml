@@ -10,6 +10,7 @@ kmmBridge = "0.5.1"
 android-gradle-plugin = "8.2.0"
 coroutines = "1.7.3"
 kotlinx-datetime = "0.4.1"
+kotlinx-serialization-core = "1.5.1"
 ktor = "2.3.5"
 mokkery = "1.9.20-1.3.0"
 
@@ -31,7 +32,7 @@ android-desugaring = "2.0.4"
 koin = "3.5.0"
 
 turbine = "1.1.0"
-kotest = "5.9.1"
+kotest = "5.8.1"
 
 
 sharedlib = "0.4.+"
@@ -42,7 +43,9 @@ compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-dateTime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization-core" }
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }

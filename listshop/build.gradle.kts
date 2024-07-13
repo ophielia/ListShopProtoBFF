@@ -20,7 +20,10 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":analytics"))
+                api(project(":analytics"))
+                api(libs.kotlin.stdlib)
+                api(libs.kotlinx.serialization.core)
+                implementation(libs.kotlinx.serialization.core)
                 implementation(libs.coroutines.core)
                 implementation(libs.bundles.ktor.common)
                 implementation(libs.multiplatformSettings)
@@ -29,17 +32,7 @@ kotlin {
                 implementation(libs.sqlDelight.coroutinesExt)
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-                //implementation(libs.resources.test)
-                implementation(libs.coroutines.test)
-                implementation(libs.turbine)
-                implementation(libs.kotest.framework.engine)
-                implementation(libs.ktor.client.mock)
-            }
-        }
+
 
 
 

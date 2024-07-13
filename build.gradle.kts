@@ -6,6 +6,7 @@ plugins {
     id("app.cash.sqldelight") version libs.versions.sqlDelight.get() apply false
     id("co.touchlab.skie") version libs.versions.skie.get() apply false
     id("dev.mokkery") version libs.versions.mokkery.get() apply false
+        id("com.autonomousapps.dependency-analysis") version "1.30.0"
 }
 
 allprojects {
