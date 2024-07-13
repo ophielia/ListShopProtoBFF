@@ -49,13 +49,14 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit)
+                implementation(libs.sqldelight.jdbc.driver)
+                implementation(libs.sqldelight.sqlite.driver)
+                implementation(libs.mock.server)
                 //implementation(libs.sqldelight.jvm)
                 //implementation(libs.coroutines.test)
                 //implementation(libs.turbine)
                 //implementation(libs.kotest.framework.engine)
                 //implementation(libs.ktor.client.mock)
-                //implementation(libs.sqldelight.jdbc.driver)
-                //implementation(libs.sqldelight.sqlite.driver)
             }
         }
 
