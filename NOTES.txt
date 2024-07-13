@@ -22,9 +22,9 @@ make mockwebserver easier to work with
         json - authSuccessInput.json, authSuccessOutput.json
 
         path - auth; label - authFail
-        json - authSuccessInput.json, authSuccessOutput.json
+        json - authFailInput.json, authFailOutput.json
 
-        The output will need to be a small wrapper which holds a status code and the body
+        The output will need to be a small wrapper which holds a status code and the body, and, why not, headers
 
 add possibility to run scripts at beginning of tests
     https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
