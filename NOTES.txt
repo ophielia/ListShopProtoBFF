@@ -55,3 +55,19 @@ https://blog.ippon.fr/2021/11/05/mockwebserver/
  }
 
 
+/**
+ * Helper function which will load JSON from
+ * the path specified
+ *
+ * @param path : Path of JSON file
+ * @return json : JSON from file at given path
+ */
+fun getJson(path : String) : String {
+    // Load the JSON response
+    val uri = this.javaClass.classLoader.getResource(path)
+    val file = File(uri.path)
+    return String(file.readBytes())
+}
+
+https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
+
