@@ -53,6 +53,7 @@ kotlin {
                 implementation(libs.sqldelight.jdbc.driver)
                 implementation(libs.sqldelight.sqlite.driver)
                 implementation(libs.mock.server)
+                implementation(libs.google.gson)
                 //implementation(libs.sqldelight.jvm)
                 //implementation(libs.coroutines.test)
                 //implementation(libs.turbine)
