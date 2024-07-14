@@ -74,16 +74,15 @@ internal class ListShopRemoteApiImpl(
         }
         _currentClientToken = token
         // token has changed, we need to re-construct the client
-        val baseUrl = sessionService.currentSession().baseUrl
         if (token == null) {
-            createClientWithoutToken(baseUrl)
+            createClientWithoutToken()
         } else {
-            createClientWithToken(token, baseUrl)
+            createClientWithToken(token)
         }
         return _client
     }
 
-    private fun createClientWithToken(token: String, baseUrl: String) {
+    private fun createClientWithToken(token: String) {
         _client = HttpClient(engine) {
             expectSuccess = true
             install(ContentNegotiation) {
@@ -123,7 +122,7 @@ internal class ListShopRemoteApiImpl(
         }
     }
 
-    private fun createClientWithoutToken(baseUrl: String) {
+    private fun createClientWithoutToken() {
         _client = HttpClient(engine) {
             expectSuccess = true
             install(ContentNegotiation) {

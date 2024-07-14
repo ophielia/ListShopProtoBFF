@@ -36,13 +36,10 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                //implementation(libs.resources.test)
                 implementation(libs.coroutines.test)
-                //implementation(libs.turbine)
                 implementation(libs.kotest.framework.engine)
                 implementation(libs.kotest.assertions.core)
                 implementation("com.goncalossilva:resources:0.4.0")
-                //implementation(libs.ktor.client.mock)
             }
         }
 
@@ -54,11 +51,6 @@ kotlin {
                 implementation(libs.sqldelight.sqlite.driver)
                 implementation(libs.mock.server)
                 implementation(libs.google.gson)
-                //implementation(libs.sqldelight.jvm)
-                //implementation(libs.coroutines.test)
-                //implementation(libs.turbine)
-                //implementation(libs.kotest.framework.engine)
-                //implementation(libs.ktor.client.mock)
             }
         }
 
