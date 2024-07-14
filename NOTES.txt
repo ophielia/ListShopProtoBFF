@@ -12,62 +12,14 @@ done - switch android studio to jellyfish
 done - get unit tests to run for common
 done - fix url issue - https://stackoverflow.com/questions/45253789/unexpected-host-with-okhttp
 done -add mock http client (well, mockwebserver)
-make mockwebserver easier to work with
-    response with headers method taking body as argument
-    match requests on - path and body
-    initialize dispatcher with path to label list
-        label corresponds to json input and output
-        ex:
-        path - auth; label - authSuccess
-        json - authSuccessInput.json, authSuccessOutput.json
+done - make mockwebserver easier to work with
 
-        path - auth; label - authFail
-        json - authFailInput.json, authFailOutput.json
-
-        The output will need to be a small wrapper which holds a status code and the body, and, why not, headers
-
-add possibility to run scripts at beginning of tests
-    https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
-
-go ahead and make happy path
+also - clean out unused dependencies in libs.
+add possibility to run scripts at beginning of tests - you have the driver - open up a way to run inserts directly in driver
 tackle error handling
 go back for a couple not so happy paths.
-also - clean out unused dependencies in libs.
 
 
-https://blog.ippon.fr/2021/11/05/mockwebserver/
- @NonNull
- @Override
- public MockResponse dispatch(@NonNull RecordedRequest request) {
-   try {
-     if ("/sites/data".equals(request.getPath())) {
-       JsonNode requestBody = mapper.readTree(request.getBody().readString(StandardCharsets.UTF_8));
-       JsonNode expectedInput = mapper.readTree(readFile("src/test/resources/controller/input-uuids-sites.json"));
-       if (requestBody.equals(expectedInput)) {
-         return createResponseWithJsonContent(readFile("src/test/resources/controller/output-sites-data.json"));
-       }
-     }
-   } catch (IOException ioe) {
-     return new MockResponse().setResponseCode(500);
-   }
-
-   return new MockResponse().setResponseCode(404);
- }
 
 
-/**
- * Helper function which will load JSON from
- * the path specified
- *
- * @param path : Path of JSON file
- * @return json : JSON from file at given path
- */
-fun getJson(path : String) : String {
-    // Load the JSON response
-    val uri = this.javaClass.classLoader.getResource(path)
-    val file = File(uri.path)
-    return String(file.readBytes())
-}
-
-https://gist.github.com/dellisd/a1df42787d42b41cd3ce16f573984674
 
