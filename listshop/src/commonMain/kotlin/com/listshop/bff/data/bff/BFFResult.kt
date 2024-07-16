@@ -1,19 +1,27 @@
 package com.listshop.bff.data.bff
 
-public class BFFResult<T> internal constructor(
+class BFFResult<T> internal constructor(
     val value: T?
 ) {
 
-    var error: BFFError? = null
-    public val isSuccess: Boolean get() = error == null
+    constructor(error: BFFError?) : this(value = null) {
+        _error = error
+    }
 
-    public val isFailure: Boolean get() = error != null
+    var _error: BFFError? = null
 
-    public companion object {
-        public  fun <T> success(value: T): BFFResult<T> {
+    val isSuccess: Boolean get() = _error == null
+
+    val isFailure: Boolean get() = _error != null
+
+    companion object {
+        fun <T> success(value: T): BFFResult<T> {
             return BFFResult(value)
         }
 
+        fun <T> error(error: BFFError): BFFResult<T> {
+            return BFFResult(error = error)
+        }
     }
 
 }

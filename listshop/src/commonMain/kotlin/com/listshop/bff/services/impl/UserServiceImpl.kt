@@ -39,7 +39,7 @@ class UserServiceImpl internal constructor(
         val postLoginUser = prepareSignInObject(userName, password)
 
         val token = remoteApi.signInUser(postLoginUser)
-listShopAnalytics.debug("the token is : " + token)
+        listShopAnalytics.debug("the token is : " + token)
         // save results
         sessionService.setUserLastSignedInToNow()
         sessionService.setUserToken(token)

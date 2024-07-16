@@ -2,6 +2,7 @@ package com.listshop.bff.remote.impl
 
 import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
 import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.bff.exceptions.HttpClientException
 import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.remote.ListShopUrl
 import com.listshop.bff.services.UserSessionService
@@ -17,6 +18,9 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.accept
 import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
@@ -84,7 +88,6 @@ internal class ListShopRemoteApiImpl(
 
     private fun createClientWithToken(token: String) {
         _client = HttpClient(engine) {
-            expectSuccess = true
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true
@@ -124,7 +127,6 @@ internal class ListShopRemoteApiImpl(
 
     private fun createClientWithoutToken() {
         _client = HttpClient(engine) {
-            expectSuccess = true
             install(ContentNegotiation) {
                 json(Json {
                     ignoreUnknownKeys = true
@@ -171,5 +173,22 @@ internal class ListShopRemoteApiImpl(
             return _listshopUrl.pathSegments + path
     }
 
+    override suspend fun postRequest(urlString: String, body: String?): HttpResponse {
+        try {
+            val response: HttpResponse = client(token())
+                .post(urlString) {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
+            return response
+        } catch (e: Exception) {
+            throw HttpClientException("post request failed with message: " + e.message)
+        }
+    }
 
+    override fun mapNonSuccessToException(statusValue: Int, exception: Exception) {
+        if (!(statusValue in 200..399)) {
+            throw exception
+        }
+    }
 }

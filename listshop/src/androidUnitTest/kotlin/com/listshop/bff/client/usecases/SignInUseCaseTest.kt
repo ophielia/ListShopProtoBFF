@@ -36,6 +36,7 @@ class SignInUseCaseTest {
 
         val newAndBetterDispatcher = TestDispatcherBuilder("signIn")
             .withConfigFile("loginSuccessConfig.json")
+            .withConfigFile("loginBadCredentialsConfig.json")
             .withConfigFile("getAllShoppingListsConfig.json")
             .build()
 
@@ -90,6 +91,19 @@ class SignInUseCaseTest {
         var result = useCaseProvider?.signIn(userName, password)
         assertNotNull(result)
         assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun `i cant login with bad credentials`(): Unit = runBlocking {
+        val userName = "meg@the-list-shop.com"
+        val password = "badPassword"
+
+        var result = useCaseProvider?.signIn(userName, password)
+        assertNotNull(result)
+        assertTrue(result.isFailure)
+        // verify the error result
+        // make standard exception handler in main api which takes exception as an argument
+        // go ahead and add exception handling to all calls (shopping list)
     }
 
 }

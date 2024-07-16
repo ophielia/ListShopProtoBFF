@@ -16,7 +16,7 @@ class TestDispatcher constructor(val mappings: List<RequestMapping>): Dispatcher
             val response  = mappings
                 .filter{ m -> m.method.equals(method) }
                 .filter{ m -> m.path.equals(path) }
-                .filter{ m -> m.body.equals(body) }
+                .filter{ m -> m.body.equals(body.trim()) }
                 .map { m -> m.response}
                 .first()
 
