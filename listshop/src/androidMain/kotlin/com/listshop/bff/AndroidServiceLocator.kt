@@ -6,37 +6,12 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.listshop.analytics.AnalyticsHandle
 import com.listshop.analytics.AppInfo
 import com.listshop.bff.db.ListshopDb
-import com.listshop.bff.services.UserSessionService
-import com.listshop.bff.ucp.DashboardUCP
-import com.listshop.bff.ucp.OnboardingUCP
-import com.listshop.bff.ucp.TagUCP
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 
-internal fun tagUCPStartup(context: Context, analyticsHandle: AnalyticsHandle, appInfo: AppInfo): TagUCP {
-    val locator = AndroidServiceLocator(context, analyticsHandle, appInfo)
-    return locator.tagUCP
-}
 
-internal fun onboardingUCPStartup(context: Context, analyticsHandle: AnalyticsHandle, appInfo: AppInfo): OnboardingUCP {
-    val locator = AndroidServiceLocator(context, analyticsHandle, appInfo)
-    return locator.onboardingUCP
-}
-
-internal fun dashboardUCPStartup(
-    context: Context,
-    analyticsHandle: AnalyticsHandle,
-    appInfo: AppInfo
-): DashboardUCP {
-    val locator = AndroidServiceLocator(context, analyticsHandle, appInfo)
-    return locator.dashboardUCP
-}
-internal fun sessionServiceStartup(context: Context, analyticsHandle: AnalyticsHandle, appInfo: AppInfo): UserSessionService {
-    val locator = AndroidServiceLocator(context, analyticsHandle, appInfo)
-    return locator.sessionService
-}
 internal class AndroidServiceLocator(
     context: Context,
     analyticsHandle: AnalyticsHandle,
