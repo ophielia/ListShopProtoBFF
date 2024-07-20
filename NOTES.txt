@@ -13,11 +13,14 @@ done - get unit tests to run for common
 done - fix url issue - https://stackoverflow.com/questions/45253789/unexpected-host-with-okhttp
 done -add mock http client (well, mockwebserver)
 done - make mockwebserver easier to work with
+done - clean out unused dependencies in libs.
+done - tackle error handling - "framework" in place
 
-also - clean out unused dependencies in libs.
-add possibility to run scripts at beginning of tests - you have the driver - open up a way to run inserts directly in driver
-tackle error handling
+DIFFICULTY - adding sql for end to end tests
+
+==> finish tests for existing use cases
 go back for a couple not so happy paths.
+add possibility to run scripts at beginning of tests - you have the driver - open up a way to run inserts directly in driver
 
 
 

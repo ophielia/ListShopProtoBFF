@@ -1,7 +1,7 @@
 package com.listshop.bff.repositories
 
 import app.cash.sqldelight.db.SqlDriver
-import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.analytics.ListShopAnalytics
 import com.listshop.bff.db.ListshopDb
 
 class ListShopDatabase(

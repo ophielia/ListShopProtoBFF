@@ -3,8 +3,8 @@ package com.listshop.bff
 import android.content.Context
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import co.touchlab.kmmbridgekickstart.AnalyticsHandle
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AnalyticsHandle
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.DashboardUCP

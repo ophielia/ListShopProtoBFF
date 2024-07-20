@@ -1,6 +1,9 @@
-package co.touchlab.kmmbridgekickstart
+package com.listshop.analytics
 
 import co.touchlab.stately.concurrency.AtomicReference
+
+var runAsDummy = false
+var dummyAnalytics : Analytics? = null
 
 interface Analytics {
     fun sendEvent(eventName: String, eventArgs: Map<String, Any>)
@@ -17,6 +20,15 @@ fun initAnalytics(analytics: Analytics): AnalyticsHandle {
     )
 }
 
+fun initDummyAnalytics(analytics: Analytics): AnalyticsHandle {
+    dummyAnalytics = analytics
+    return AnalyticsHandle(
+        appAnalytics = AppAnalytics(),
+        listShopAnalytics = ListShopAnalytics(),
+        httpClientAnalytics = HttpClientAnalytics()
+    )
+}
+
 data class AnalyticsHandle(
     val appAnalytics: AppAnalytics,
     val listShopAnalytics: ListShopAnalytics,
@@ -24,7 +36,11 @@ data class AnalyticsHandle(
 )
 
 internal fun sendEvent(name: String, vararg args: Pair<String, Any>) {
-     AnalyticsHandler.analyticsAtom.get()!!.sendEvent(name, args.toMap())
+    if (dummyAnalytics == null) {
+    AnalyticsHandler.analyticsAtom.get()!!.sendEvent(name, args.toMap())
+    } else {
+        dummyAnalytics?.sendEvent(name, args.toMap())
+    }
 }
 
 internal object AnalyticsHandler {

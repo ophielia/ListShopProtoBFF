@@ -21,3 +21,6 @@ UPDATE UserInfoEntity
 
 selectAllUserInfos:
 SELECT UserInfoEntity.* FROM UserInfoEntity;
+
+removeAllUserInfo:
+DELETE FROM UserInfoEntity;

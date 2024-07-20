@@ -1,20 +1,19 @@
 package com.listshop.bffpoc
 
-import co.touchlab.kmmbridgekickstart.Analytics
-import co.touchlab.kmmbridgekickstart.AppInfo
-import co.touchlab.kmmbridgekickstart.initAnalytics
-import com.listshop.bff.dashboardUCPStartup
-import com.listshop.bff.onboardingUCPStartup
-import com.listshop.bff.sessionServiceStartup
-import com.listshop.bff.tagUCPStartup
+import com.listshop.analytics.Analytics
+import com.listshop.analytics.AppInfo
+import com.listshop.analytics.initAnalytics
+import com.listshop.bff.getProviders
 
 fun startSDK(analytics: Analytics, appInfo : AppInfo): SDKHandle {
     val analyticsHandle = initAnalytics(analytics)
+    val providerCollection = getProviders(analyticsHandle, appInfo)
     return SDKHandle(
-        tagUCP = tagUCPStartup(analyticsHandle, appInfo),
-        onboardingUCP = onboardingUCPStartup(analyticsHandle, appInfo),
-        dashboardUCP = dashboardUCPStartup(analyticsHandle, appInfo),
-        sessionService = sessionServiceStartup(analyticsHandle, appInfo),
-        appAnalytics = analyticsHandle.appAnalytics
+        tagUCP = providerCollection.tagUCP,
+        onboardingUCP = providerCollection.onboardingUCP,
+        dashboardUCP = providerCollection.dashboardUCP,
+        sessionService = providerCollection.sessionService,
+        appAnalytics = providerCollection.appAnalytics
     )
 }
+

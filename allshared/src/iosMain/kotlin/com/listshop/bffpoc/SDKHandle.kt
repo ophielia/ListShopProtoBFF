@@ -1,6 +1,6 @@
 package com.listshop.bffpoc
 
-import co.touchlab.kmmbridgekickstart.AppAnalytics
+import com.listshop.analytics.AppAnalytics
 import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.DashboardUCP
 import com.listshop.bff.ucp.OnboardingUCP

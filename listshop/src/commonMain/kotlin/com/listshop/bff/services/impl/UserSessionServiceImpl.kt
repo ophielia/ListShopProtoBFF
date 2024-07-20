@@ -1,6 +1,6 @@
 package com.listshop.bff.services.impl
 
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.data.model.UserInfo
 import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.db.UserInfoEntity

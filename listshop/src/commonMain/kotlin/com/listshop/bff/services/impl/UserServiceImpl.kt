@@ -1,6 +1,6 @@
 package com.listshop.bff.services.impl
 
-import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.analytics.ListShopAnalytics
 import com.listshop.bff.data.remote.ApiDeviceInfo
 import com.listshop.bff.data.remote.PostUserLogin
 import com.listshop.bff.remote.UserApi
@@ -28,7 +28,11 @@ class UserServiceImpl internal constructor(
         }
 
         // logout on the server
-        remoteApi.logoutUser()
+        try {
+            remoteApi.logoutUser()
+        } catch (e: Exception) {
+            listShopAnalytics.debug("remote call to logout failed. continuing logout on device. message: " + e.message)
+        }
 
         // clear session
         sessionService.setUserToken(null)

@@ -7,7 +7,6 @@ import com.listshop.bff.exceptions.AuthenticationException
 import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.remote.UserApi
 import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -36,11 +35,10 @@ internal class UserApiImpl(
     override suspend fun signInUser(postLoginUser: PostUserLogin): String {
 
         val urlString = remoteApi.buildPath("/auth")
-        val testPost = Json.encodeToString(postLoginUser)
-        val response = remoteApi.postRequest(urlString, testPost)
+        val userLoginPayload = Json.encodeToString(postLoginUser)
+        val response = remoteApi.postRequest(urlString, userLoginPayload)
 
         remoteApi.mapNonSuccessToException(response.status.value,AuthenticationException("login call failed with status: " + response.status.value))
-
 
         val wrappedUser: ApiWrappedUser = response.body()
         return wrappedUser.user.token ?: "token"
@@ -49,9 +47,9 @@ internal class UserApiImpl(
     override suspend fun logoutUser() {
 
         val urlString = remoteApi.buildPath("/auth/logout")
-        remoteApi.client(remoteApi.token()).get(urlString)
+        val response = remoteApi.getRequest(urlString)
 
-        //MM nfl handle  failure
+        remoteApi.mapNonSuccessToException(response.status.value,AuthenticationException("logout call failed with status: " + response.status.value))
     }
 
 

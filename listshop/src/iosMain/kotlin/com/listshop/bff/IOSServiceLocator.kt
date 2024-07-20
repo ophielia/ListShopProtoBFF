@@ -2,8 +2,8 @@ package com.listshop.bff
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
-import co.touchlab.kmmbridgekickstart.AnalyticsHandle
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AnalyticsHandle
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.services.UserSessionService
 import com.listshop.bff.ucp.DashboardUCP
@@ -22,6 +22,22 @@ fun tagUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): TagUCP {
         appInfo = appInfo
     )
     return locator.tagUCP
+}
+
+fun getProviders(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): ProviderCollection {
+    val locator = IOSServiceLocator(
+        NSUserDefaults(suiteName = SETTINGS_KEY),
+        analyticsHandle = analyticsHandle,
+        appInfo = appInfo
+    )
+    return ProviderCollection(
+        appAnalytics = analyticsHandle.appAnalytics,
+        tagUCP = locator.tagUCP,
+        sessionService = locator.sessionService,
+        onboardingUCP = locator.onboardingUCP,
+        dashboardUCP = locator.dashboardUCP
+
+    )
 }
 
 fun onboardingUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): OnboardingUCP {

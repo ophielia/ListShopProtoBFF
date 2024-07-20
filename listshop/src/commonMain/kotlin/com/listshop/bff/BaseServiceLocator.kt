@@ -1,11 +1,11 @@
 package com.listshop.bff
 
 import app.cash.sqldelight.db.SqlDriver
-import co.touchlab.kmmbridgekickstart.AnalyticsHandle
-import co.touchlab.kmmbridgekickstart.AppAnalytics
-import co.touchlab.kmmbridgekickstart.AppInfo
-import co.touchlab.kmmbridgekickstart.HttpClientAnalytics
-import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.analytics.AnalyticsHandle
+import com.listshop.analytics.AppAnalytics
+import com.listshop.analytics.AppInfo
+import com.listshop.analytics.HttpClientAnalytics
+import com.listshop.analytics.ListShopAnalytics
 import com.listshop.bff.remote.ListShopRemoteApi
 import com.listshop.bff.remote.ShoppingListApi
 import com.listshop.bff.remote.TagApi
@@ -34,12 +34,13 @@ internal const val SETTINGS_KEY = "KMMBridgeKickStartSettings"
 internal const val DB_NAME = "ListshopDb"
 
 internal abstract class BaseServiceLocator(private val analyticsHandle: AnalyticsHandle,
-    private val appInfo: AppInfo) :
+                                           private val appInfo: AppInfo
+) :
     ServiceLocator {
 
     protected abstract val sqlDriver: SqlDriver
     protected abstract val clientEngine: HttpClientEngine
-    protected abstract val settings: Settings  //MM not sure this is needed
+    protected abstract val settings: Settings
 
     override val tagUCP: TagUCP by lazy {
         TagUCP(
@@ -113,7 +114,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
     }
 
 
-    private val listShopDatabase: ListShopDatabase by lazy {
+    protected val listShopDatabase: ListShopDatabase by lazy {
         ListShopDatabase(
             sqlDriver = sqlDriver,
             analytics = listShopAnalytics
@@ -124,6 +125,7 @@ internal abstract class BaseServiceLocator(private val analyticsHandle: Analytic
         ListShopRemoteApiImpl(
             engine = clientEngine,
             sessionService = sessionService,
+            appInfo = appInfo,
             httpClientAnalytics = httpClientAnalytics,
             listShopAnalytics = listShopAnalytics
         )

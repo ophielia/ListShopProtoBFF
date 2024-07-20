@@ -1,6 +1,6 @@
 package com.listshop.bff.ucp
 
-import co.touchlab.kmmbridgekickstart.ListShopAnalytics
+import com.listshop.analytics.ListShopAnalytics
 import com.listshop.bff.data.bff.BFFResult
 import com.listshop.bff.data.state.ConnectionStatus
 import com.listshop.bff.data.state.TransitionViewState

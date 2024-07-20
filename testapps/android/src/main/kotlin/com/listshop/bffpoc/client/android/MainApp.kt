@@ -4,10 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import co.touchlab.kmmbridgekickstart.Analytics
-import co.touchlab.kmmbridgekickstart.AppInfo
-import com.listshop.bff.ucp.TagUCP
+import com.listshop.analytics.Analytics
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.startSDK
+import com.listshop.bff.ucp.TagUCP
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 

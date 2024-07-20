@@ -1,4 +1,4 @@
-package co.touchlab.kmmbridgekickstart
+package com.listshop.analytics
 
 class ListShopAnalytics internal constructor() {
 

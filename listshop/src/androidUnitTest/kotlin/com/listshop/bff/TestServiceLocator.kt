@@ -2,8 +2,8 @@ package com.listshop.bff
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import co.touchlab.kmmbridgekickstart.AnalyticsHandle
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AnalyticsHandle
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.client.MySettingsImpl
 import com.listshop.bff.db.ListshopDb
 import com.listshop.bff.services.UserSessionService
@@ -14,12 +14,12 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.okhttp.OkHttp
 
-internal fun tagUCPStartup( analyticsHandle: AnalyticsHandle, appInfo: AppInfo): TagUCP {
+internal fun tagUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): TagUCP {
     val locator = TestServiceLocator( analyticsHandle, appInfo)
     return locator.tagUCP
 }
 
-internal fun onboardingUCPStartup( analyticsHandle: AnalyticsHandle, appInfo: AppInfo): OnboardingUCP {
+internal fun onboardingUCPStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): OnboardingUCP {
     val locator = TestServiceLocator( analyticsHandle, appInfo)
     return locator.onboardingUCP
 }
@@ -31,7 +31,7 @@ internal fun dashboardUCPStartup(
     val locator = TestServiceLocator( analyticsHandle, appInfo)
     return locator.dashboardUCP
 }
-internal fun sessionServiceStartup( analyticsHandle: AnalyticsHandle, appInfo: AppInfo): UserSessionService {
+internal fun sessionServiceStartup(analyticsHandle: AnalyticsHandle, appInfo: AppInfo): UserSessionService {
     val locator = TestServiceLocator( analyticsHandle, appInfo)
     return locator.sessionService
 }
@@ -39,7 +39,7 @@ internal class TestServiceLocator(
     analyticsHandle: AnalyticsHandle,
     appInfo: AppInfo
 ) : BaseServiceLocator(analyticsHandle, appInfo) {
-    override val sqlDriver: SqlDriver by lazy {
+    override public val sqlDriver: SqlDriver by lazy {
         JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
             .also { ListshopDb.Schema.create(it) }
     }
@@ -49,4 +49,10 @@ internal class TestServiceLocator(
     }
 
     override val clientEngine: HttpClientEngine by lazy { OkHttp.create() }
+
+    val testDBHelper: TestDatabaseHelper by lazy {
+        TestDatabaseHelper(
+            listShopDatabase = listShopDatabase
+        )
+    }
 }

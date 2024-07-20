@@ -1,6 +1,6 @@
 package com.listshop.bff.services
 
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AppInfo
 
 interface UserSessionService {
 

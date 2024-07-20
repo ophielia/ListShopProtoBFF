@@ -14,7 +14,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
  */
-import co.touchlab.kmmbridgekickstart.AppInfo
+import com.listshop.analytics.AppInfo
 import com.listshop.bff.data.model.UserInfo
 import com.listshop.bff.data.state.UserSessionState
 import com.listshop.bff.db.UserInfoEntity
